@@ -259,6 +259,185 @@ h2 {
     color: var(--color-muted);
 }
 
+/* ---------- Лендинг ---------- */
+
+.hero {
+    text-align: center;
+    padding: 56px 0 40px;
+}
+
+.hero h1 {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    font-size: 18px;
+    color: var(--color-muted);
+    margin-bottom: 24px;
+}
+
+.hero__actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.section {
+    margin-bottom: 44px;
+}
+
+.section__more {
+    margin-top: 16px;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.step {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.step__num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.step h3 {
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.step p {
+    font-size: 14px;
+    color: var(--color-muted);
+}
+
+.rules ul {
+    padding-left: 20px;
+}
+
+.rules li {
+    margin-bottom: 8px;
+}
+
+/* ---------- Карточки лотов ---------- */
+
+.lots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.lot-card__image {
+    height: 130px;
+    background: linear-gradient(135deg, #dfe6f5, #c3d0ea);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    font-weight: 700;
+    color: #8296bd;
+}
+
+.lot-card__body {
+    padding: 16px;
+}
+
+.lot-card__title {
+    font-size: 17px;
+    margin: 8px 0 4px;
+}
+
+.lot-card__title a {
+    color: var(--color-text);
+}
+
+.lot-card__category {
+    font-size: 13px;
+    color: var(--color-muted);
+    margin-bottom: 8px;
+}
+
+.lot-card__price {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.lot-card__time {
+    font-size: 13px;
+    color: var(--color-muted);
+    margin-bottom: 12px;
+}
+
+.countdown {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.empty {
+    color: var(--color-muted);
+    padding: 24px 0;
+}
+
+/* ---------- Статусы ---------- */
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge--active {
+    background: #e5f6ec;
+    color: var(--color-success);
+}
+
+.badge--scheduled {
+    background: #fff3df;
+    color: var(--color-warning);
+}
+
+.badge--finished {
+    background: #eceef3;
+    color: var(--color-muted);
+}
+
+.badge--draft,
+.badge--pending_moderation {
+    background: #e8effc;
+    color: var(--color-primary);
+}
+
+.badge--cancelled,
+.badge--rejected {
+    background: #fdeaea;
+    color: var(--color-danger);
+}
+
 /* ---------- Подвал ---------- */
 
 .footer {

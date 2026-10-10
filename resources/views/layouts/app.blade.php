@@ -13,6 +13,8 @@
         <a href="{{ route('home') }}" class="logo">Online<span>Auction</span></a>
 
         <nav class="nav">
+            <a href="{{ route('auctions.index') }}">Лоты</a>
+
             @auth
                 <span class="nav__user">{{ auth()->user()->name }}</span>
 
@@ -56,5 +58,6 @@
     </div>
 </footer>
 
+<script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>
