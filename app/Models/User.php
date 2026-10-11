@@ -44,4 +44,18 @@ class User extends Authenticatable
     {
         return $this->role === 'client';
     }
+
+    /**
+     * Имя для публичных страниц: "Иван К." вместо полного имени.
+     */
+    public function shortName(): string
+    {
+        $parts = preg_split('/\s+/', trim($this->name));
+
+        if (count($parts) < 2) {
+            return $this->name;
+        }
+
+        return $parts[0] . ' ' . mb_strtoupper(mb_substr($parts[1], 0, 1)) . '.';
+    }
 }

@@ -438,6 +438,460 @@ h2 {
     color: var(--color-danger);
 }
 
+/* ---------- Страница лота ---------- */
+
+.lot-page {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+.lot-header h1 {
+    margin: 10px 0 4px;
+}
+
+.lot-header__category {
+    color: var(--color-muted);
+    font-size: 14px;
+}
+
+.lot-info {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.lot-info__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 15px;
+}
+
+.lot-info__row:last-child {
+    border-bottom: none;
+}
+
+.lot-info__row span {
+    color: var(--color-muted);
+}
+
+.lot-description {
+    white-space: pre-line;
+}
+
+.price-box {
+    padding: 20px;
+    position: sticky;
+    top: 16px;
+}
+
+.price-box__label {
+    font-size: 13px;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+}
+
+.price-box__value {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.price-box__min {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+}
+
+.price-box__timer {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+.price-box__winner {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-success);
+    margin-bottom: 12px;
+}
+
+.price-box__note {
+    font-size: 14px;
+    color: var(--color-muted);
+    margin-bottom: 14px;
+}
+
+.price-box__empty {
+    color: var(--color-muted);
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+/* ---------- Таблицы ---------- */
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    font-size: 15px;
+}
+
+.table th,
+.table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+    background: #f0f2f7;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--color-muted);
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---------- Фильтры ---------- */
+
+.filters {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.filters__row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.filters__search {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-family: inherit;
+}
+
+.filters select {
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    background: #fff;
+}
+
+.filters__tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.filters__tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--color-text);
+    background: var(--color-bg);
+}
+
+.filters__tab--active {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.filters__tab:hover {
+    text-decoration: none;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 24px;
+}
+
+.pagination__item {
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-card);
+    font-size: 14px;
+    color: var(--color-text);
+}
+
+.pagination__item:hover {
+    text-decoration: none;
+    border-color: var(--color-primary);
+}
+
+.pagination__item--active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+.pagination__item--disabled {
+    color: var(--color-muted);
+}
+
+/* ---------- Админ-панель ---------- */
+
+.admin-body {
+    display: block;
+}
+
+.topbar {
+    background: var(--color-card);
+    border-bottom: 1px solid var(--color-border);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+
+.topbar__right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.topbar__hint {
+    font-size: 14px;
+    color: var(--color-muted);
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: start;
+    padding-top: 24px;
+    padding-bottom: 40px;
+}
+
+.sidebar {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 12px;
+    position: sticky;
+    top: 16px;
+}
+
+.sidebar__link {
+    display: block;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    color: var(--color-text);
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.sidebar__link:hover {
+    background: var(--color-bg);
+    text-decoration: none;
+}
+
+.sidebar__link--active {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.sidebar__link--active:hover {
+    background: var(--color-primary-hover);
+}
+
+.sidebar__divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 10px 0;
+}
+
+.page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.page-head h1 {
+    margin-bottom: 0;
+}
+
+.page-head__filters {
+    display: flex;
+    gap: 8px;
+}
+
+.page-head__filters input,
+.page-head__filters select {
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.stat {
+    padding: 16px;
+    text-align: center;
+}
+
+.stat__value {
+    display: block;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.stat__label {
+    font-size: 13px;
+    color: var(--color-muted);
+}
+
+.table__actions {
+    white-space: nowrap;
+}
+
+.table__actions .btn {
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+.table__select {
+    padding: 5px 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 13px;
+    background: #fff;
+}
+
+.table__row--inactive {
+    opacity: 0.55;
+}
+
+.form--wide {
+    max-width: 760px;
+}
+
+.form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.moderator-card {
+    padding: 18px 20px;
+    margin-bottom: 16px;
+}
+
+.moderator-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.moderator-card__head h3 {
+    font-size: 18px;
+}
+
+.moderator-card__email {
+    font-size: 14px;
+    color: var(--color-muted);
+}
+
+.moderator-card__lots {
+    list-style: none;
+    padding: 0;
+}
+
+.moderator-card__lots li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-top: 1px solid var(--color-border);
+    font-size: 15px;
+}
+
+.moderator-card__price {
+    margin-left: auto;
+    color: var(--color-muted);
+    font-size: 14px;
+}
+
+@media (max-width: 900px) {
+    .lots-grid,
+    .steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .lot-page,
+    .admin-layout,
+    .form__row {
+        grid-template-columns: 1fr;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .lots-grid,
+    .steps,
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .header__inner {
+        flex-direction: column;
+        height: auto;
+        gap: 8px;
+        padding: 10px 0;
+    }
+}
+
 /* ---------- Подвал ---------- */
 
 .footer {
