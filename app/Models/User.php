@@ -58,4 +58,28 @@ class User extends Authenticatable
 
         return $parts[0] . ' ' . mb_strtoupper(mb_substr($parts[1], 0, 1)) . '.';
     }
+
+    /**
+     * Лоты, которыми пользователь управляет как модератор.
+     */
+    public function managedAuctions()
+    {
+        return $this->hasMany(Auction::class, 'moderator_id');
+    }
+
+    /**
+     * Лоты, которые пользователь создал.
+     */
+    public function createdAuctions()
+    {
+        return $this->hasMany(Auction::class, 'created_by');
+    }
+
+    /**
+     * Ставки пользователя.
+     */
+    public function bids()
+    {
+        return $this->hasMany(Bid::class);
+    }
 }

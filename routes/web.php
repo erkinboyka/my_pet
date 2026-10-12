@@ -26,4 +26,18 @@ Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->
  */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/users', [Admin\UserController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/block', [Admin\UserController::class, 'toggleBlock'])->name('users.block');
+    Route::post('/users/{user}/role', [Admin\UserController::class, 'changeRole'])->name('users.role');
+    Route::delete('/users/{user}', [Admin\UserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('/auctions', [Admin\AuctionController::class, 'index'])->name('auctions.index');
+    Route::get('/auctions/create', [Admin\AuctionController::class, 'create'])->name('auctions.create');
+    Route::post('/auctions', [Admin\AuctionController::class, 'store'])->name('auctions.store');
+    Route::get('/auctions/{auction}/edit', [Admin\AuctionController::class, 'edit'])->name('auctions.edit');
+    Route::post('/auctions/{auction}', [Admin\AuctionController::class, 'update'])->name('auctions.update');
+    Route::post('/auctions/{auction}/cancel', [Admin\AuctionController::class, 'cancel'])->name('auctions.cancel');
+
+    Route::get('/moderators', [Admin\ModeratorController::class, 'index'])->name('moderators.index');
 });

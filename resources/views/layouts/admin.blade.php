@@ -26,6 +26,18 @@
            class="sidebar__link {{ request()->routeIs('admin.dashboard') ? 'sidebar__link--active' : '' }}">
             Обзор
         </a>
+        <a href="{{ route('admin.users.index') }}"
+           class="sidebar__link {{ request()->routeIs('admin.users.*') ? 'sidebar__link--active' : '' }}">
+            Пользователи
+        </a>
+        <a href="{{ route('admin.auctions.index') }}"
+           class="sidebar__link {{ request()->routeIs('admin.auctions.*') ? 'sidebar__link--active' : '' }}">
+            Лоты
+        </a>
+        <a href="{{ route('admin.moderators.index') }}"
+           class="sidebar__link {{ request()->routeIs('admin.moderators.*') ? 'sidebar__link--active' : '' }}">
+            Модераторы
+        </a>
 
         <div class="sidebar__divider"></div>
 
