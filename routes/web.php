@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Moderator;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -37,7 +38,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/auctions', [Admin\AuctionController::class, 'store'])->name('auctions.store');
     Route::get('/auctions/{auction}/edit', [Admin\AuctionController::class, 'edit'])->name('auctions.edit');
     Route::post('/auctions/{auction}', [Admin\AuctionController::class, 'update'])->name('auctions.update');
+    Route::post('/auctions/{auction}/approve', [Admin\AuctionController::class, 'approve'])->name('auctions.approve');
+    Route::post('/auctions/{auction}/reject', [Admin\AuctionController::class, 'reject'])->name('auctions.reject');
     Route::post('/auctions/{auction}/cancel', [Admin\AuctionController::class, 'cancel'])->name('auctions.cancel');
 
     Route::get('/moderators', [Admin\ModeratorController::class, 'index'])->name('moderators.index');
+});
+
+/*
+ * Кабинет модератора
+ */
+Route::middleware(['auth', 'role:moderator'])->prefix('moderator')->name('moderator.')->group(function () {
+    Route::get('/', [Moderator\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/auctions', [Moderator\AuctionController::class, 'index'])->name('auctions.index');
+    Route::get('/auctions/create', [Moderator\AuctionController::class, 'create'])->name('auctions.create');
+    Route::post('/auctions', [Moderator\AuctionController::class, 'store'])->name('auctions.store');
+    Route::get('/auctions/{auction}', [Moderator\AuctionController::class, 'show'])->name('auctions.show');
+    Route::get('/auctions/{auction}/edit', [Moderator\AuctionController::class, 'edit'])->name('auctions.edit');
+    Route::post('/auctions/{auction}', [Moderator\AuctionController::class, 'update'])->name('auctions.update');
+    Route::post('/auctions/{auction}/cancel', [Moderator\AuctionController::class, 'cancel'])->name('auctions.cancel');
 });

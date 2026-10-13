@@ -47,7 +47,17 @@
                 <td>{{ $lot->end_at->format('d.m.Y H:i') }}</td>
                 <td>{{ $lot->moderator?->name ?? '—' }}</td>
                 <td class="table__actions">
-                    @if (! in_array($lot->status, ['finished', 'cancelled']))
+                    @if ($lot->status === 'pending_moderation')
+                        <form method="POST" action="{{ route('admin.auctions.approve', $lot) }}" class="inline-form">
+                            @csrf
+                            <button type="submit" class="btn btn--primary btn--sm">Одобрить</button>
+                        </form>
+
+                        <form method="POST" action="{{ route('admin.auctions.reject', $lot) }}" class="inline-form">
+                            @csrf
+                            <button type="submit" class="btn btn--danger btn--sm">Отклонить</button>
+                        </form>
+                    @elseif (! in_array($lot->status, ['finished', 'cancelled']))
                         <a href="{{ route('admin.auctions.edit', $lot) }}" class="btn btn--ghost btn--sm">Изменить</a>
 
                         <form method="POST" action="{{ route('admin.auctions.cancel', $lot) }}" class="inline-form"

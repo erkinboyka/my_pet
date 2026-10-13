@@ -93,6 +93,32 @@ class AuctionController extends Controller
     }
 
     /**
+     * Одобрить лот модератора.
+     */
+    public function approve(Auction $auction): RedirectResponse
+    {
+        $this->authorize('moderate', $auction);
+
+        $auction->update([
+            'status' => $auction->start_at->isFuture() ? 'scheduled' : 'active',
+        ]);
+
+        return back()->with('success', "Лот «{$auction->title}» одобрен и опубликован.");
+    }
+
+    /**
+     * Отклонить лот модератора.
+     */
+    public function reject(Auction $auction): RedirectResponse
+    {
+        $this->authorize('moderate', $auction);
+
+        $auction->update(['status' => 'rejected']);
+
+        return back()->with('success', "Лот «{$auction->title}» отклонён.");
+    }
+
+    /**
      * Отменить лот.
      */
     public function cancel(Auction $auction): RedirectResponse
