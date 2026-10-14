@@ -112,7 +112,30 @@
                 @guest
                     <a href="{{ route('login') }}" class="btn btn--primary btn--block">Войдите, чтобы сделать ставку</a>
                 @else
-                    <p class="price-box__note">Форма ставки появится позже</p>
+                    @if (auth()->user()->isClient())
+                        @if ($auction->moderator_id === auth()->id() || $auction->created_by === auth()->id())
+                            <p class="price-box__note">Это ваш лот — ставить на него нельзя.</p>
+                        @else
+                            <form method="POST" action="{{ route('bids.store', $auction) }}" class="bid-form" id="bid-form">
+                                @csrf
+
+                                <label for="bid-amount">Ваша ставка (сомони)</label>
+                                <input type="number" id="bid-amount" name="amount"
+                                       value="{{ old('amount', $auction->nextMinBid()) }}"
+                                       min="1" step="1" required>
+
+                                @error('amount')
+                                    <span class="form__error">{{ $message }}</span>
+                                @enderror
+
+                                <button type="submit" class="btn btn--primary btn--block" id="bid-submit">
+                                    Сделать ставку
+                                </button>
+                            </form>
+                        @endif
+                    @else
+                        <p class="price-box__note">Ставки доступны только участникам (роль client).</p>
+                    @endif
                 @endguest
 
             @elseif ($status === 'cancelled' || $status === 'rejected')

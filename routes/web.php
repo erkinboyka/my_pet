@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BidController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Moderator;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,18 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
+
+/*
+ * Ставки и личный кабинет участника
+ */
+Route::post('/auctions/{auction}/bids', [BidController::class, 'store'])
+    ->middleware(['auth', 'throttle:30,1'])
+    ->name('bids.store');
+
+Route::middleware('auth')->prefix('account')->name('client.')->group(function () {
+    Route::get('/my-bids', [BidController::class, 'myBids'])->name('my-bids');
+    Route::get('/wins', [BidController::class, 'wins'])->name('wins');
+});
 
 /*
  * Панель администратора

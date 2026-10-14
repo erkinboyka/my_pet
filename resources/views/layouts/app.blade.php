@@ -18,6 +18,11 @@
             @auth
                 <span class="nav__user">{{ auth()->user()->name }}</span>
 
+                @if (auth()->user()->isClient())
+                    <a href="{{ route('client.my-bids') }}">Мои ставки</a>
+                    <a href="{{ route('client.wins') }}">Победы</a>
+                @endif
+
                 @if (auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}">Админ</a>
                 @elseif (auth()->user()->isModerator())

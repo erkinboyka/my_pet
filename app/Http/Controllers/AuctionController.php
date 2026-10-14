@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auction;
+use App\Services\AuctionService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AuctionController extends Controller
 {
+    public function __construct(private AuctionService $auctionService)
+    {
+    }
+
     /**
      * Список лотов.
      */
@@ -61,6 +66,9 @@ class AuctionController extends Controller
      */
     public function show(Auction $auction): View
     {
+        // Если время лота вышло — сразу фиксируем победителя
+        $this->auctionService->finalizeIfExpired($auction);
+
         $auction->load([
             'category',
             'moderator',

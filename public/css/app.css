@@ -652,6 +652,41 @@ h2 {
     color: var(--color-muted);
 }
 
+/* ---------- Форма ставки ---------- */
+
+.bid-form {
+    border-top: 1px solid var(--color-border);
+    padding-top: 14px;
+    margin-top: 4px;
+}
+
+.bid-form label {
+    display: block;
+    font-size: 13px;
+    color: var(--color-muted);
+    margin-bottom: 6px;
+}
+
+.bid-form input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-family: inherit;
+    margin-bottom: 10px;
+}
+
+.bid-form input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.page-sub {
+    color: var(--color-muted);
+    margin-bottom: 20px;
+}
+
 /* ---------- Админ-панель ---------- */
 
 .admin-body {
