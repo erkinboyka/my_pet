@@ -24,6 +24,25 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
 
 /*
+ * Переключатели языка и валюты (настройки хранятся в сессии)
+ */
+Route::get('/lang/{lang}', function (string $lang) {
+    if (in_array($lang, ['ru', 'en'], true)) {
+        session(['lang' => $lang]);
+    }
+
+    return back();
+})->name('lang.set');
+
+Route::get('/currency/{code}', function (string $code) {
+    if (in_array($code, ['TJS', 'USD'], true)) {
+        session(['currency' => $code]);
+    }
+
+    return back();
+})->name('currency.set');
+
+/*
  * Ставки и личный кабинет участника
  */
 Route::post('/auctions/{auction}/bids', [BidController::class, 'store'])

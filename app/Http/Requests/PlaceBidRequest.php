@@ -27,9 +27,9 @@ class PlaceBidRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'amount.required' => 'Введите сумму ставки.',
-            'amount.numeric' => 'Ставка должна быть числом.',
-            'amount.min' => 'Ставка должна быть больше нуля.',
+            'amount.required' => __('bid.err.required'),
+            'amount.numeric' => __('bid.err.numeric'),
+            'amount.min' => __('bid.err.min'),
         ];
     }
 }

@@ -1,56 +1,56 @@
 @extends('layouts.app')
 
-@section('title', 'Онлайн-аукцион')
+@section('title', __('home.title'))
 
 @section('content')
 
 <section class="hero">
-    <h1>Онлайн-аукцион</h1>
-    <p>Делайте ставки. Следите за торгами. Получайте лучшие предложения.</p>
+    <h1>{{ __('home.title') }}</h1>
+    <p>{{ __('home.text') }}</p>
     <div class="hero__actions">
-        <a href="{{ route('auctions.index') }}" class="btn btn--primary">Смотреть лоты</a>
+        <a href="{{ route('auctions.index') }}" class="btn btn--primary">{{ __('home.viewLots') }}</a>
         @guest
-            <a href="{{ route('register') }}" class="btn btn--ghost">Регистрация</a>
+            <a href="{{ route('register') }}" class="btn btn--ghost">{{ __('home.register') }}</a>
         @endguest
     </div>
 </section>
 
 @if ($activeLots->isNotEmpty())
 <section class="section">
-    <h2>Активные лоты</h2>
+    <h2>{{ __('home.activeLots') }}</h2>
     <div class="lots-grid">
         @foreach ($activeLots as $lot)
             @include('partials.auction-card', ['auction' => $lot])
         @endforeach
     </div>
-    <p class="section__more"><a href="{{ route('auctions.index') }}">Все лоты →</a></p>
+    <p class="section__more"><a href="{{ route('auctions.index') }}">{{ __('home.allLots') }}</a></p>
 </section>
 @endif
 
 <section class="section">
-    <h2>Как работает аукцион</h2>
+    <h2>{{ __('home.how') }}</h2>
     <div class="steps">
         <div class="step">
             <div class="step__num">1</div>
-            <h3>Найдите лот</h3>
-            <p>Выберите интересующий лот из списка активных аукционов.</p>
+            <h3>{{ __('home.step1t') }}</h3>
+            <p>{{ __('home.step1d') }}</p>
         </div>
         <div class="step">
             <div class="step__num">2</div>
-            <h3>Сделайте ставку</h3>
-            <p>Укажите сумму не меньше минимальной допустимой ставки.</p>
+            <h3>{{ __('home.step2t') }}</h3>
+            <p>{{ __('home.step2d') }}</p>
         </div>
         <div class="step">
             <div class="step__num">3</div>
-            <h3>Заберите победу</h3>
-            <p>Если к концу аукциона ваша ставка останется максимальной — лот ваш.</p>
+            <h3>{{ __('home.step3t') }}</h3>
+            <p>{{ __('home.step3d') }}</p>
         </div>
     </div>
 </section>
 
 @if ($upcomingLots->isNotEmpty())
 <section class="section">
-    <h2>Скоро откроются</h2>
+    <h2>{{ __('home.upcoming') }}</h2>
     <div class="lots-grid">
         @foreach ($upcomingLots as $lot)
             @include('partials.auction-card', ['auction' => $lot])
@@ -61,7 +61,7 @@
 
 @if ($finishedLots->isNotEmpty())
 <section class="section">
-    <h2>Завершённые аукционы</h2>
+    <h2>{{ __('home.finished') }}</h2>
     <div class="lots-grid">
         @foreach ($finishedLots as $lot)
             @include('partials.auction-card', ['auction' => $lot])
@@ -71,12 +71,12 @@
 @endif
 
 <section class="section rules">
-    <h2>Правила аукциона</h2>
+    <h2>{{ __('home.rules') }}</h2>
     <ul>
-        <li>Ставки принимаются только в период между открытием и закрытием лота.</li>
-        <li>Ставка не может быть меньше текущей цены плюс минимальный шаг.</li>
-        <li>После завершения аукциона новые ставки не принимаются.</li>
-        <li>Победителем становится участник с максимальной ставкой на момент окончания.</li>
+        <li>{{ __('home.rule1') }}</li>
+        <li>{{ __('home.rule2') }}</li>
+        <li>{{ __('home.rule3') }}</li>
+        <li>{{ __('home.rule4') }}</li>
     </ul>
 </section>
 

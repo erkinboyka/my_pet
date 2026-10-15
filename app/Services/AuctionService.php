@@ -27,13 +27,13 @@ class AuctionService
 
             if (! $locked->isOpenForBids()) {
                 throw ValidationException::withMessages([
-                    'amount' => 'Лот закрыт для ставок.',
+                    'amount' => __('bid.err.closed'),
                 ]);
             }
 
             if (now()->lt($locked->start_at)) {
                 throw ValidationException::withMessages([
-                    'amount' => 'Лот ещё не открыт. Откроется '.$locked->start_at->format('d.m.Y H:i').'.',
+                    'amount' => __('bid.err.notStarted', ['when' => $locked->start_at->format('d.m.Y H:i')]),
                 ]);
             }
 
@@ -41,7 +41,7 @@ class AuctionService
             $topBid = $locked->bids()->latest('id')->first();
             if ($topBid && $topBid->user_id === $userId) {
                 throw ValidationException::withMessages([
-                    'amount' => 'Вы и так держите максимальную ставку.',
+                    'amount' => __('bid.err.selfLeader'),
                 ]);
             }
 
@@ -49,7 +49,7 @@ class AuctionService
 
             if ($amount < $min) {
                 throw ValidationException::withMessages([
-                    'amount' => 'Минимальная ставка — '.number_format($min, 0, ',', ' ').' сомони.',
+                    'amount' => __('bid.err.tooLow', ['min' => format_price($min)]),
                 ]);
             }
 

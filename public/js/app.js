@@ -30,4 +30,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     tick();
     setInterval(tick, 1000);
+
+    // Сообщения об успехе прячем сами
+    document.querySelectorAll('.alert--success').forEach(function (el) {
+        setTimeout(function () {
+            el.style.display = 'none';
+        }, 6000);
+    });
+
+    // Кнопка ставки блокируется при отправке
+    var bidForm = document.getElementById('bid-form');
+    if (bidForm) {
+        bidForm.addEventListener('submit', function () {
+            var btn = document.getElementById('bid-submit');
+            if (btn && btn.textContent.trim() !== '') {
+                btn.disabled = true;
+                btn.textContent = btn.dataset.loadingText || '...';
+            }
+        });
+    }
 });

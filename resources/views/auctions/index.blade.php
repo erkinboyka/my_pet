@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Лоты')
+@section('title', __('auctions.title'))
 
 @section('content')
-<h1>Лоты аукциона</h1>
+<h1>{{ __('auctions.title') }}</h1>
 
 <form method="GET" action="{{ route('auctions.index') }}" class="filters card">
     <div class="filters__row">
-        <input type="text" name="q" value="{{ request('q') }}" placeholder="Поиск по названию..." class="filters__search">
+        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ __('auctions.search') }}" class="filters__search">
 
         <select name="category">
-            <option value="">Все категории</option>
+            <option value="">{{ __('auctions.allCategories') }}</option>
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                     {{ $category->name }}
@@ -19,29 +19,25 @@
         </select>
 
         <select name="sort">
-            <option value="end_asc" {{ $sort === 'end_asc' ? 'selected' : '' }}>Сначала ранние окончания</option>
-            <option value="end_desc" {{ $sort === 'end_desc' ? 'selected' : '' }}>Сначала поздние окончания</option>
-            <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>Цена: по возрастанию</option>
-            <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>Цена: по убыванию</option>
-            <option value="new" {{ $sort === 'new' ? 'selected' : '' }}>Сначала новые</option>
+            @foreach (['end_asc', 'end_desc', 'price_asc', 'price_desc', 'new'] as $sortKey)
+                <option value="{{ $sortKey }}" {{ $sort === $sortKey ? 'selected' : '' }}>
+                    {{ __('auctions.sort.'.$sortKey) }}
+                </option>
+            @endforeach
         </select>
 
-        <button type="submit" class="btn btn--primary">Найти</button>
+        <button type="submit" class="btn btn--primary">{{ __('auctions.find') }}</button>
 
         @if (request('q') || request('category'))
-            <a href="{{ route('auctions.index') }}" class="btn btn--ghost">Сбросить</a>
+            <a href="{{ route('auctions.index') }}" class="btn btn--ghost">{{ __('auctions.reset') }}</a>
         @endif
     </div>
 
     <div class="filters__tabs">
-        <a href="{{ route('auctions.index', ['tab' => 'live', 'q' => request('q'), 'category' => request('category')]) }}"
-           class="filters__tab {{ $tab === 'live' ? 'filters__tab--active' : '' }}">Активные</a>
-        <a href="{{ route('auctions.index', ['tab' => 'upcoming', 'q' => request('q'), 'category' => request('category')]) }}"
-           class="filters__tab {{ $tab === 'upcoming' ? 'filters__tab--active' : '' }}">Скоро откроются</a>
-        <a href="{{ route('auctions.index', ['tab' => 'finished', 'q' => request('q'), 'category' => request('category')]) }}"
-           class="filters__tab {{ $tab === 'finished' ? 'filters__tab--active' : '' }}">Завершённые</a>
-        <a href="{{ route('auctions.index', ['tab' => 'all', 'q' => request('q'), 'category' => request('category')]) }}"
-           class="filters__tab {{ $tab === 'all' ? 'filters__tab--active' : '' }}">Все</a>
+        @foreach (['live' => 'tab.live', 'upcoming' => 'tab.upcoming', 'finished' => 'tab.finished', 'all' => 'tab.all'] as $tabKey => $tabLabel)
+            <a href="{{ route('auctions.index', ['tab' => $tabKey, 'q' => request('q'), 'category' => request('category'), 'sort' => request('sort')]) }}"
+               class="filters__tab {{ $tab === $tabKey ? 'filters__tab--active' : '' }}">{{ __($tabLabel) }}</a>
+        @endforeach
     </div>
 </form>
 
@@ -49,7 +45,7 @@
     @forelse ($lots as $lot)
         @include('partials.auction-card', ['auction' => $lot])
     @empty
-        <p class="empty">Ничего не найдено. Попробуйте изменить параметры поиска.</p>
+        <p class="empty">{{ __('auctions.notFound') }}</p>
     @endforelse
 </div>
 

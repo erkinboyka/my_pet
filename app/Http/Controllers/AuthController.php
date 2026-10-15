@@ -32,7 +32,7 @@ class AuthController extends Controller
         // Заблокированные пользователи войти не могут
         if (! Auth::attempt($credentials + ['is_active' => true], $request->boolean('remember'))) {
             throw ValidationException::withMessages([
-                'email' => 'Неверный email или пароль.',
+                'email' => __('auth.invalid'),
             ]);
         }
 
@@ -82,7 +82,7 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('auctions.index')
-            ->with('success', 'Регистрация завершена. Добро пожаловать!');
+            ->with('success', __('auth.registered'));
     }
 
     /**

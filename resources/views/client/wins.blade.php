@@ -1,19 +1,22 @@
 @extends('layouts.app')
 
-@section('title', 'Мои победы')
+@section('title', __('client.winsTitle'))
 
 @section('content')
-<h1>Мои победы</h1>
+<h1>{{ __('client.winsTitle') }}</h1>
 
-<p class="page-sub">Лоты, где ваша ставка осталась максимальной · <a href="{{ route('client.my-bids') }}">Мои ставки</a></p>
+<p class="page-sub">
+    {{ __('client.winsSub') }} ·
+    <a href="{{ route('client.my-bids') }}">{{ __('client.bidsLink') }}</a>
+</p>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Лот</th>
-            <th>Категория</th>
-            <th>Выигранная сумма</th>
-            <th>Завершён</th>
+            <th>{{ __('nav.lots') }}</th>
+            <th>{{ __('client.category') }}</th>
+            <th>{{ __('client.winningSum') }}</th>
+            <th>{{ __('client.finishedAt') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -21,12 +24,12 @@
             <tr>
                 <td><a href="{{ route('auctions.show', $win) }}">{{ $win->title }}</a></td>
                 <td>{{ $win->category?->name ?? '—' }}</td>
-                <td><strong>{{ number_format((float) ($win->winning_price ?? $win->currentPrice()), 0, ',', ' ') }} сомони</strong></td>
+                <td><strong>{{ format_price((float) ($win->winning_price ?? $win->currentPrice())) }}</strong></td>
                 <td>{{ $win->end_at->format('d.m.Y H:i') }}</td>
             </tr>
         @empty
             <tr>
-                <td colspan="4" class="empty">Пока нет побед. Удачи на торгах!</td>
+                <td colspan="4" class="empty">{{ __('client.noWins') }}</td>
             </tr>
         @endforelse
     </tbody>

@@ -25,12 +25,12 @@ class BidController extends Controller
 
         // Ставки делают только клиенты
         if (! $user->isClient()) {
-            return back()->with('error', 'Ставки может делать только участник с ролью client.');
+            return back()->with('error', __('bid.err.role'));
         }
 
         // На свой лот ставить нельзя
         if ($auction->moderator_id === $user->id || $auction->created_by === $user->id) {
-            return back()->with('error', 'На собственный лот ставить нельзя.');
+            return back()->with('error', __('bid.err.onOwn'));
         }
 
         $amount = (float) $request->input('amount');
@@ -39,7 +39,7 @@ class BidController extends Controller
 
         return back()->with(
             'success',
-            'Ваша ставка принята: '.number_format($amount, 0, ',', ' ').' сомони.'
+            __('bid.accepted', ['amount' => format_price($amount)])
         );
     }
 

@@ -93,6 +93,28 @@ a:hover {
     font-size: 14px;
 }
 
+.switcher {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.switcher__item {
+    padding: 3px 9px;
+    font-size: 12px;
+    color: var(--color-muted);
+}
+
+.switcher__item--active {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.switcher__item:hover {
+    text-decoration: none;
+}
+
 .inline-form {
     display: inline;
 }

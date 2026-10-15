@@ -6,7 +6,7 @@
     <div class="lot-card__image">{{ mb_strtoupper(mb_substr($auction->title, 0, 1)) }}</div>
 
     <div class="lot-card__body">
-        <span class="badge badge--{{ $status }}">{{ \App\Models\Auction::STATUSES[$status] ?? $status }}</span>
+        <span class="badge badge--{{ $status }}">{{ __('status.'.$status) }}</span>
 
         <h3 class="lot-card__title">
             <a href="{{ route('auctions.show', $auction) }}">{{ $auction->title }}</a>
@@ -18,25 +18,24 @@
 
         <p class="lot-card__price">
             @if ($auction->current_price !== null)
-                Текущая ставка:
-                <strong>{{ number_format($auction->currentPrice(), 0, ',', ' ') }} сомони</strong>
+                {{ __('card.currentBid') }}
             @else
-                Стартовая цена:
-                <strong>{{ number_format($auction->currentPrice(), 0, ',', ' ') }} сомони</strong>
+                {{ __('card.startingPrice') }}
             @endif
+            <strong>{{ format_price($auction->currentPrice()) }}</strong>
         </p>
 
         <p class="lot-card__time">
             @if ($status === 'active')
-                До окончания:
+                {{ __('card.untilEnd') }}
                 <span class="countdown" data-end="{{ $auction->end_at->toIso8601String() }}">--:--:--</span>
             @elseif ($status === 'scheduled')
-                Откроется: {{ $auction->start_at->format('d.m.Y H:i') }}
+                {{ __('card.opensAt') }} {{ $auction->start_at->format('d.m.Y H:i') }}
             @elseif ($status === 'finished')
-                Завершён {{ $auction->end_at->format('d.m.Y H:i') }}
+                {{ __('auction.endedAt', ['when' => $auction->end_at->format('d.m.Y H:i')]) }}
             @endif
         </p>
 
-        <a href="{{ route('auctions.show', $auction) }}" class="btn btn--primary btn--sm">Подробнее</a>
+        <a href="{{ route('auctions.show', $auction) }}" class="btn btn--primary btn--sm">{{ __('card.details') }}</a>
     </div>
 </div>
