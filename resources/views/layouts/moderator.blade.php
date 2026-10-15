@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Кабинет модератора') — Online Auction</title>
+    <title>@yield('title', 'Online Auction') — Online Auction</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="admin-body">
@@ -11,10 +11,16 @@
 <header class="topbar">
     <a href="{{ route('home') }}" class="logo">Online<span>Auction</span></a>
     <div class="topbar__right">
-        <span class="topbar__hint">Модератор · {{ auth()->user()->name }}</span>
+        <div class="switcher">
+            <a href="{{ route('lang.set', 'ru') }}"
+               class="switcher__item {{ app()->getLocale() === 'ru' ? 'switcher__item--active' : '' }}">RU</a>
+            <a href="{{ route('lang.set', 'en') }}"
+               class="switcher__item {{ app()->getLocale() === 'en' ? 'switcher__item--active' : '' }}">EN</a>
+        </div>
+        <span class="topbar__hint">{{ __('mod.top.role') }} · {{ auth()->user()->name }}</span>
         <form method="POST" action="{{ route('logout') }}" class="inline-form">
             @csrf
-            <button type="submit" class="btn btn--ghost btn--sm">Выйти</button>
+            <button type="submit" class="btn btn--ghost btn--sm">{{ __('nav.logout') }}</button>
         </form>
     </div>
 </header>
@@ -24,20 +30,20 @@
     <aside class="sidebar">
         <a href="{{ route('moderator.dashboard') }}"
            class="sidebar__link {{ request()->routeIs('moderator.dashboard') ? 'sidebar__link--active' : '' }}">
-            Обзор
+            {{ __('admin.nav.dashboard') }}
         </a>
         <a href="{{ route('moderator.auctions.index') }}"
            class="sidebar__link {{ request()->routeIs('moderator.auctions.*') && !request()->routeIs('moderator.auctions.create') ? 'sidebar__link--active' : '' }}">
-            Мои лоты
+            {{ __('mod.myLots') }}
         </a>
         <a href="{{ route('moderator.auctions.create') }}"
            class="sidebar__link {{ request()->routeIs('moderator.auctions.create') ? 'sidebar__link--active' : '' }}">
-            + Новый лот
+            {{ __('mod.newLot') }}
         </a>
 
         <div class="sidebar__divider"></div>
 
-        <a href="{{ route('home') }}" class="sidebar__link">Открыть сайт →</a>
+        <a href="{{ route('home') }}" class="sidebar__link">{{ __('admin.nav.site') }}</a>
     </aside>
 
     <main class="admin-content">

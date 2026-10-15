@@ -7,27 +7,27 @@
 @endphp
 
 @section('content')
-<p><a href="{{ route('moderator.auctions.index') }}">← К моим лотам</a></p>
+<p><a href="{{ route('moderator.auctions.index') }}">{{ __('admin.form.back') }}</a></p>
 
 <div class="page-head">
     <div>
-        <span class="badge badge--{{ $status }}">{{ \App\Models\Auction::STATUSES[$status] ?? $status }}</span>
+        <span class="badge badge--{{ $status }}">{{ __('status.'.$status) }}</span>
         <h1>{{ $auction->title }}</h1>
         @if ($auction->category)
-            <p class="lot-header__category">Категория: {{ $auction->category->name }}</p>
+            <p class="lot-header__category">{{ __('auction.category') }} {{ $auction->category->name }}</p>
         @endif
     </div>
 
     <div class="page-head__actions">
         @can('update', $auction)
-            <a href="{{ route('moderator.auctions.edit', $auction) }}" class="btn btn--ghost btn--sm">Изменить</a>
+            <a href="{{ route('moderator.auctions.edit', $auction) }}" class="btn btn--ghost btn--sm">{{ __('admin.auctions.edit') }}</a>
         @endcan
 
         @can('cancel', $auction)
             <form method="POST" action="{{ route('moderator.auctions.cancel', $auction) }}" class="inline-form"
-                  onsubmit="return confirm('Отменить лот?')">
+                  onsubmit="return confirm('{{ __('admin.auctions.cancelConfirm', ['title' => $auction->title]) }}')">
                 @csrf
-                <button type="submit" class="btn btn--danger btn--sm">Отменить</button>
+                <button type="submit" class="btn btn--danger btn--sm">{{ __('admin.auctions.cancel') }}</button>
             </form>
         @endcan
     </div>
@@ -38,41 +38,41 @@
 
         <div class="lot-info card">
             <div class="lot-info__row">
-                <span>Открытие:</span>
+                <span>{{ __('auction.openAt') }}</span>
                 <strong>{{ $auction->start_at->format('d.m.Y H:i') }}</strong>
             </div>
             <div class="lot-info__row">
-                <span>Закрытие:</span>
+                <span>{{ __('auction.closeAt') }}</span>
                 <strong>{{ $auction->end_at->format('d.m.Y H:i') }}</strong>
             </div>
             <div class="lot-info__row">
-                <span>Стартовая цена:</span>
-                <strong>{{ number_format((float) $auction->starting_price, 0, ',', ' ') }} сомони</strong>
+                <span>{{ __('auction.startPrice') }}</span>
+                <strong>{{ format_price((float) $auction->starting_price) }}</strong>
             </div>
             <div class="lot-info__row">
-                <span>Минимальный шаг:</span>
-                <strong>{{ number_format((float) $auction->minimum_bid_step, 0, ',', ' ') }} сомони</strong>
+                <span>{{ __('auction.step') }}</span>
+                <strong>{{ format_price((float) $auction->minimum_bid_step) }}</strong>
             </div>
         </div>
 
         <section class="section">
-            <h2>Описание</h2>
+            <h2>{{ __('auction.description') }}</h2>
             <p class="lot-description">{{ $auction->description }}</p>
         </section>
 
         <section class="section">
-            <h2>История ставок</h2>
+            <h2>{{ __('auction.history') }}</h2>
 
             @if ($auction->bids->isEmpty())
-                <p class="empty">Ставок пока нет.</p>
+                <p class="empty">{{ __('auction.noBids') }}</p>
             @else
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Участник</th>
-                            <th>Email</th>
-                            <th>Сумма</th>
-                            <th>Время</th>
+                            <th>{{ __('admin.col.name') }}</th>
+                            <th>{{ __('admin.col.email') }}</th>
+                            <th>{{ __('auction.amount') }}</th>
+                            <th>{{ __('auction.time') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,7 +80,7 @@
                             <tr>
                                 <td>{{ $bid->user?->name ?? '—' }}</td>
                                 <td>{{ $bid->user?->email ?? '—' }}</td>
-                                <td><strong>{{ number_format((float) $bid->amount, 0, ',', ' ') }} сомони</strong></td>
+                                <td><strong>{{ format_price((float) $bid->amount) }}</strong></td>
                                 <td>{{ $bid->created_at->format('d.m.Y H:i') }}</td>
                             </tr>
                         @endforeach
@@ -93,22 +93,18 @@
     <aside class="lot-page__side">
         <div class="price-box card">
             <p class="price-box__label">
-                @if ($auction->current_price !== null)
-                    Текущая ставка
-                @else
-                    Стартовая цена
-                @endif
+                {{ $auction->current_price !== null ? __('auction.current') : __('auction.starting') }}
             </p>
-            <p class="price-box__value">{{ number_format($auction->currentPrice(), 0, ',', ' ') }} сомони</p>
+            <p class="price-box__value">{{ format_price($auction->currentPrice()) }}</p>
 
-            <p class="price-box__label">Ставок всего</p>
+            <p class="price-box__label">{{ __('mod.show.bidsTotal') }}</p>
             <p class="price-box__value">{{ $auction->bids->count() }}</p>
 
             @if ($status === 'active')
-                <p class="price-box__label">До окончания</p>
+                <p class="price-box__label">{{ __('auction.untilEnd') }}</p>
                 <p class="price-box__timer countdown" data-end="{{ $auction->end_at->toIso8601String() }}">--:--:--</p>
             @elseif ($status === 'pending_moderation')
-                <p class="price-box__note">Лот ждёт одобрения администратора.</p>
+                <p class="price-box__note">{{ __('mod.show.pendingNote') }}</p>
             @endif
         </div>
     </aside>

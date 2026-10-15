@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Auction;
 use App\Models\User;
 use Illuminate\View\View;
 

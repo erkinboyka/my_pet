@@ -17,7 +17,7 @@ class EnsureUserHasRole
         $user = $request->user();
 
         if (! $user || ! in_array($user->role, $roles, true)) {
-            abort(403, 'У вас нет доступа к этой странице.');
+            abort(403);
         }
 
         // Заблокированный пользователь не может пользоваться сайтом
@@ -26,7 +26,7 @@ class EnsureUserHasRole
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login')->with('error', 'Ваш аккаунт заблокирован.');
+            return redirect()->route('login')->with('error', __('auth.blocked'));
         }
 
         return $next($request);

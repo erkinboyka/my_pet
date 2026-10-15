@@ -1,41 +1,41 @@
 @extends('layouts.moderator')
 
-@section('title', 'Обзор')
+@section('title', __('mod.dashboard.title'))
 
 @section('content')
-<h1>Мой обзор</h1>
+<h1>{{ __('mod.dashboard.title') }}</h1>
 
 <div class="stats stats--4">
     <div class="stat card">
         <span class="stat__value">{{ $stats['total'] }}</span>
-        <span class="stat__label">Моих лотов</span>
+        <span class="stat__label">{{ __('mod.stat.total') }}</span>
     </div>
     <div class="stat card">
         <span class="stat__value">{{ $stats['live'] }}</span>
-        <span class="stat__label">Идут сейчас</span>
+        <span class="stat__label">{{ __('admin.stat.live') }}</span>
     </div>
     <div class="stat card">
         <span class="stat__value">{{ $stats['pending'] }}</span>
-        <span class="stat__label">На модерации</span>
+        <span class="stat__label">{{ __('admin.stat.pending') }}</span>
     </div>
     <div class="stat card">
         <span class="stat__value">{{ $stats['finished'] }}</span>
-        <span class="stat__label">Завершено</span>
+        <span class="stat__label">{{ __('admin.stat.finished') }}</span>
     </div>
 </div>
 
 <section class="section">
-    <h2>Идут сейчас</h2>
+    <h2>{{ __('admin.stat.live') }}</h2>
 
     @if ($liveLots->isEmpty())
-        <p class="empty">Активных лотов нет.</p>
+        <p class="empty">{{ __('mod.noLive') }}</p>
     @else
         <table class="table">
             <thead>
                 <tr>
-                    <th>Лот</th>
-                    <th>Текущая цена</th>
-                    <th>Закрытие</th>
+                    <th>{{ __('admin.col.lot') }}</th>
+                    <th>{{ __('auction.current') }}</th>
+                    <th>{{ __('admin.col.close') }}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -43,12 +43,12 @@
                 @foreach ($liveLots as $lot)
                     <tr>
                         <td>{{ $lot->title }}</td>
-                        <td><strong>{{ number_format($lot->currentPrice(), 0, ',', ' ') }} сомони</strong></td>
+                        <td><strong>{{ format_price($lot->currentPrice()) }}</strong></td>
                         <td>
                             <span class="countdown" data-end="{{ $lot->end_at->toIso8601String() }}">--:--:--</span>
                         </td>
                         <td>
-                            <a href="{{ route('moderator.auctions.show', $lot) }}" class="btn btn--ghost btn--sm">Открыть</a>
+                            <a href="{{ route('moderator.auctions.show', $lot) }}" class="btn btn--ghost btn--sm">{{ __('mod.open') }}</a>
                         </td>
                     </tr>
                 @endforeach
@@ -58,18 +58,18 @@
 </section>
 
 <section class="section">
-    <h2>Последние ставки на моих лотах</h2>
+    <h2>{{ __('mod.recentBids') }}</h2>
 
     @if ($recentBids->isEmpty())
-        <p class="empty">Ставок пока нет.</p>
+        <p class="empty">{{ __('admin.noBids') }}</p>
     @else
         <table class="table">
             <thead>
                 <tr>
-                    <th>Участник</th>
-                    <th>Лот</th>
-                    <th>Сумма</th>
-                    <th>Время</th>
+                    <th>{{ __('admin.col.user') }}</th>
+                    <th>{{ __('admin.col.lot') }}</th>
+                    <th>{{ __('auction.amount') }}</th>
+                    <th>{{ __('admin.col.time') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,7 +77,7 @@
                     <tr>
                         <td>{{ $bid->user?->name ?? '—' }}</td>
                         <td>{{ $bid->auction?->title ?? '—' }}</td>
-                        <td><strong>{{ number_format((float) $bid->amount, 0, ',', ' ') }}</strong></td>
+                        <td><strong>{{ format_price((float) $bid->amount) }}</strong></td>
                         <td>{{ $bid->created_at->format('d.m.Y H:i') }}</td>
                     </tr>
                 @endforeach

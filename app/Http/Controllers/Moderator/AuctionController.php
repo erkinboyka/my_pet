@@ -61,8 +61,8 @@ class AuctionController extends Controller
             ->with(
                 'success',
                 $auction->status === 'pending_moderation'
-                    ? "Лот «{$auction->title}» отправлен на модерацию."
-                    : "Лот «{$auction->title}» сохранён как черновик."
+                    ? __('mod.flash.createdPending', ['title' => $auction->title])
+                    : __('mod.flash.createdDraft', ['title' => $auction->title])
             );
     }
 
@@ -111,7 +111,7 @@ class AuctionController extends Controller
         $auction->save();
 
         return redirect()->route('moderator.auctions.index')
-            ->with('success', "Лот «{$auction->title}» обновлён.");
+            ->with('success', __('mod.flash.updated', ['title' => $auction->title]));
     }
 
     /**
@@ -123,7 +123,7 @@ class AuctionController extends Controller
 
         $auction->update(['status' => 'cancelled']);
 
-        return back()->with('success', "Лот «{$auction->title}» отменён.");
+        return back()->with('success', __('mod.flash.cancelled', ['title' => $auction->title]));
     }
 
     /**
@@ -140,7 +140,7 @@ class AuctionController extends Controller
             'start_at' => ['required', 'date'],
             'end_at' => ['required', 'date', 'after:start_at'],
         ], [
-            'end_at.after' => 'Дата закрытия должна быть позже даты открытия.',
+            'end_at.after' => __('validation.endAfterStart'),
         ]);
     }
 

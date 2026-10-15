@@ -59,7 +59,7 @@ class AuctionController extends Controller
         $auction->save();
 
         return redirect()->route('admin.auctions.index')
-            ->with('success', "Лот «{$auction->title}» создан.");
+            ->with('success', __('admin.flash.lotCreated', ['title' => $auction->title]));
     }
 
     /**
@@ -80,7 +80,7 @@ class AuctionController extends Controller
     public function update(Request $request, Auction $auction): RedirectResponse
     {
         if ($auction->status === 'finished') {
-            return back()->with('error', 'Завершённый лот редактировать нельзя.');
+            return back()->with('error', __('admin.flash.finishedNoEdit'));
         }
 
         $data = $this->validateData($request);
@@ -89,7 +89,7 @@ class AuctionController extends Controller
         $auction->save();
 
         return redirect()->route('admin.auctions.index')
-            ->with('success', "Лот «{$auction->title}» обновлён.");
+            ->with('success', __('admin.flash.lotUpdated', ['title' => $auction->title]));
     }
 
     /**
@@ -103,7 +103,7 @@ class AuctionController extends Controller
             'status' => $auction->start_at->isFuture() ? 'scheduled' : 'active',
         ]);
 
-        return back()->with('success', "Лот «{$auction->title}» одобрен и опубликован.");
+        return back()->with('success', __('admin.flash.approved', ['title' => $auction->title]));
     }
 
     /**
@@ -115,7 +115,7 @@ class AuctionController extends Controller
 
         $auction->update(['status' => 'rejected']);
 
-        return back()->with('success', "Лот «{$auction->title}» отклонён.");
+        return back()->with('success', __('admin.flash.rejected', ['title' => $auction->title]));
     }
 
     /**
@@ -124,12 +124,12 @@ class AuctionController extends Controller
     public function cancel(Auction $auction): RedirectResponse
     {
         if ($auction->status === 'finished') {
-            return back()->with('error', 'Завершённый лот отменить нельзя.');
+            return back()->with('error', __('admin.flash.finishedNoCancel'));
         }
 
         $auction->update(['status' => 'cancelled']);
 
-        return back()->with('success', "Лот «{$auction->title}» отменён.");
+        return back()->with('success', __('admin.flash.lotCancelled', ['title' => $auction->title]));
     }
 
     /**
@@ -149,7 +149,7 @@ class AuctionController extends Controller
             'end_at' => ['required', 'date', 'after:start_at'],
             'moderator_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'moderator')],
         ], [
-            'end_at.after' => 'Дата закрытия должна быть позже даты открытия.',
+            'end_at.after' => __('validation.endAfterStart'),
         ]);
     }
 

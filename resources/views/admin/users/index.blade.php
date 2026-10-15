@@ -1,33 +1,33 @@
 @extends('layouts.admin')
 
-@section('title', 'Пользователи')
+@section('title', __('admin.users.title'))
 
 @section('content')
 <div class="page-head">
-    <h1>Пользователи</h1>
+    <h1>{{ __('admin.users.title') }}</h1>
 
     <form method="GET" action="{{ route('admin.users.index') }}" class="page-head__filters">
-        <input type="text" name="q" value="{{ request('q') }}" placeholder="Имя или email">
+        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ __('admin.users.search') }}">
         <select name="role">
-            <option value="">Все роли</option>
-            <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>admin</option>
-            <option value="moderator" {{ request('role') === 'moderator' ? 'selected' : '' }}>moderator</option>
-            <option value="client" {{ request('role') === 'client' ? 'selected' : '' }}>client</option>
+            <option value="">{{ __('admin.users.allRoles') }}</option>
+            @foreach (['admin', 'moderator', 'client'] as $roleKey)
+                <option value="{{ $roleKey }}" {{ request('role') === $roleKey ? 'selected' : '' }}>{{ $roleKey }}</option>
+            @endforeach
         </select>
-        <button type="submit" class="btn btn--primary btn--sm">Найти</button>
+        <button type="submit" class="btn btn--primary btn--sm">{{ __('admin.users.find') }}</button>
     </form>
 </div>
 
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Имя</th>
-            <th>Email</th>
-            <th>Роль</th>
-            <th>Статус</th>
-            <th>Дата регистрации</th>
-            <th>Действия</th>
+            <th>{{ __('admin.col.id') }}</th>
+            <th>{{ __('admin.col.name') }}</th>
+            <th>{{ __('admin.col.email') }}</th>
+            <th>{{ __('admin.col.role') }}</th>
+            <th>{{ __('admin.col.status') }}</th>
+            <th>{{ __('admin.col.registered') }}</th>
+            <th>{{ __('admin.col.actions') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -43,18 +43,18 @@
                         <form method="POST" action="{{ route('admin.users.role', $user) }}" class="inline-form">
                             @csrf
                             <select name="role" class="table__select" onchange="this.form.submit()">
-                                <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>admin</option>
-                                <option value="moderator" {{ $user->role === 'moderator' ? 'selected' : '' }}>moderator</option>
-                                <option value="client" {{ $user->role === 'client' ? 'selected' : '' }}>client</option>
+                                @foreach (['admin', 'moderator', 'client'] as $roleKey)
+                                    <option value="{{ $roleKey }}" {{ $user->role === $roleKey ? 'selected' : '' }}>{{ $roleKey }}</option>
+                                @endforeach
                             </select>
                         </form>
                     @endif
                 </td>
                 <td>
                     @if ($user->is_active)
-                        <span class="badge badge--active">активен</span>
+                        <span class="badge badge--active">{{ __('admin.users.active') }}</span>
                     @else
-                        <span class="badge badge--cancelled">заблокирован</span>
+                        <span class="badge badge--cancelled">{{ __('admin.users.blocked') }}</span>
                     @endif
                 </td>
                 <td>{{ $user->created_at->format('d.m.Y H:i') }}</td>
@@ -63,22 +63,22 @@
                         <form method="POST" action="{{ route('admin.users.block', $user) }}" class="inline-form">
                             @csrf
                             <button type="submit" class="btn btn--ghost btn--sm">
-                                {{ $user->is_active ? 'Заблокировать' : 'Разблокировать' }}
+                                {{ $user->is_active ? __('admin.users.block') : __('admin.users.unblock') }}
                             </button>
                         </form>
 
                         <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline-form"
-                              onsubmit="return confirm('Удалить пользователя {{ $user->name }}?')">
+                              onsubmit="return confirm('{{ __('admin.users.deleteConfirm', ['name' => $user->name]) }}')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn--danger btn--sm">Удалить</button>
+                            <button type="submit" class="btn btn--danger btn--sm">{{ __('admin.users.delete') }}</button>
                         </form>
                     @endif
                 </td>
             </tr>
         @empty
             <tr>
-                <td colspan="7" class="empty">Пользователи не найдены.</td>
+                <td colspan="7" class="empty">{{ __('admin.users.none') }}</td>
             </tr>
         @endforelse
     </tbody>

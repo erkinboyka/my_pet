@@ -1,38 +1,38 @@
 @extends('layouts.admin')
 
-@section('title', 'Лоты')
+@section('title', __('admin.auctions.title'))
 
 @section('content')
 <div class="page-head">
-    <h1>Лоты</h1>
-    <a href="{{ route('admin.auctions.create') }}" class="btn btn--primary btn--sm">+ Создать лот</a>
+    <h1>{{ __('admin.auctions.title') }}</h1>
+    <a href="{{ route('admin.auctions.create') }}" class="btn btn--primary btn--sm">{{ __('admin.auctions.create') }}</a>
 </div>
 
 <form method="GET" action="{{ route('admin.auctions.index') }}" class="filters card">
     <div class="filters__row">
-        <input type="text" name="q" value="{{ request('q') }}" placeholder="Название лота">
+        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ __('admin.auctions.search') }}">
         <select name="status">
-            <option value="">Все статусы</option>
+            <option value="">{{ __('admin.auctions.allStatuses') }}</option>
             @foreach ($statuses as $key => $label)
-                <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ __('status.'.$key) }}</option>
             @endforeach
         </select>
-        <button type="submit" class="btn btn--primary btn--sm">Найти</button>
-        <a href="{{ route('admin.auctions.index') }}" class="btn btn--ghost btn--sm">Сбросить</a>
+        <button type="submit" class="btn btn--primary btn--sm">{{ __('admin.users.find') }}</button>
+        <a href="{{ route('admin.auctions.index') }}" class="btn btn--ghost btn--sm">{{ __('auctions.reset') }}</a>
     </div>
 </form>
 
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Статус</th>
-            <th>Цена</th>
-            <th>Открытие</th>
-            <th>Закрытие</th>
-            <th>Модератор</th>
-            <th>Действия</th>
+            <th>{{ __('admin.col.id') }}</th>
+            <th>{{ __('admin.col.name') }}</th>
+            <th>{{ __('admin.col.status') }}</th>
+            <th>{{ __('admin.col.price') }}</th>
+            <th>{{ __('admin.col.open') }}</th>
+            <th>{{ __('admin.col.close') }}</th>
+            <th>{{ __('admin.col.moderator') }}</th>
+            <th>{{ __('admin.col.actions') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -41,8 +41,8 @@
             <tr>
                 <td>{{ $lot->id }}</td>
                 <td><a href="{{ route('auctions.show', $lot) }}">{{ $lot->title }}</a></td>
-                <td><span class="badge badge--{{ $status }}">{{ $statuses[$status] ?? $status }}</span></td>
-                <td>{{ number_format($lot->currentPrice(), 0, ',', ' ') }}</td>
+                <td><span class="badge badge--{{ $status }}">{{ __('status.'.$status) }}</span></td>
+                <td>{{ format_price($lot->currentPrice()) }}</td>
                 <td>{{ $lot->start_at->format('d.m.Y H:i') }}</td>
                 <td>{{ $lot->end_at->format('d.m.Y H:i') }}</td>
                 <td>{{ $lot->moderator?->name ?? '—' }}</td>
@@ -50,27 +50,27 @@
                     @if ($lot->status === 'pending_moderation')
                         <form method="POST" action="{{ route('admin.auctions.approve', $lot) }}" class="inline-form">
                             @csrf
-                            <button type="submit" class="btn btn--primary btn--sm">Одобрить</button>
+                            <button type="submit" class="btn btn--primary btn--sm">{{ __('admin.auctions.approve') }}</button>
                         </form>
 
                         <form method="POST" action="{{ route('admin.auctions.reject', $lot) }}" class="inline-form">
                             @csrf
-                            <button type="submit" class="btn btn--danger btn--sm">Отклонить</button>
+                            <button type="submit" class="btn btn--danger btn--sm">{{ __('admin.auctions.reject') }}</button>
                         </form>
                     @elseif (! in_array($lot->status, ['finished', 'cancelled']))
-                        <a href="{{ route('admin.auctions.edit', $lot) }}" class="btn btn--ghost btn--sm">Изменить</a>
+                        <a href="{{ route('admin.auctions.edit', $lot) }}" class="btn btn--ghost btn--sm">{{ __('admin.auctions.edit') }}</a>
 
                         <form method="POST" action="{{ route('admin.auctions.cancel', $lot) }}" class="inline-form"
-                              onsubmit="return confirm('Отменить лот {{ $lot->title }}?')">
+                              onsubmit="return confirm('{{ __('admin.auctions.cancelConfirm', ['title' => $lot->title]) }}')">
                             @csrf
-                            <button type="submit" class="btn btn--danger btn--sm">Отменить</button>
+                            <button type="submit" class="btn btn--danger btn--sm">{{ __('admin.auctions.cancel') }}</button>
                         </form>
                     @endif
                 </td>
             </tr>
         @empty
             <tr>
-                <td colspan="8" class="empty">Лоты не найдены.</td>
+                <td colspan="8" class="empty">{{ __('admin.auctions.none') }}</td>
             </tr>
         @endforelse
     </tbody>

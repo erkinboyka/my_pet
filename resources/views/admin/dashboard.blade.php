@@ -1,46 +1,46 @@
 @extends('layouts.admin')
 
-@section('title', 'Обзор')
+@section('title', __('admin.dashboard.title'))
 
 @section('content')
-<h1>Обзор</h1>
+<h1>{{ __('admin.dashboard.title') }}</h1>
 
 <div class="stats">
     <div class="stat card">
         <span class="stat__value">{{ $stats['users'] }}</span>
-        <span class="stat__label">Пользователей</span>
+        <span class="stat__label">{{ __('admin.stat.users') }}</span>
     </div>
     <div class="stat card">
         <span class="stat__value">{{ $stats['live'] }}</span>
-        <span class="stat__label">Идут сейчас</span>
+        <span class="stat__label">{{ __('admin.stat.live') }}</span>
     </div>
     <div class="stat card">
         <span class="stat__value">{{ $stats['pending'] }}</span>
-        <span class="stat__label">На модерации</span>
+        <span class="stat__label">{{ __('admin.stat.pending') }}</span>
     </div>
     <div class="stat card">
         <span class="stat__value">{{ $stats['finished'] }}</span>
-        <span class="stat__label">Завершено</span>
+        <span class="stat__label">{{ __('admin.stat.finished') }}</span>
     </div>
     <div class="stat card">
         <span class="stat__value">{{ $stats['total'] }}</span>
-        <span class="stat__label">Всего лотов</span>
+        <span class="stat__label">{{ __('admin.stat.total') }}</span>
     </div>
 </div>
 
 <section class="section">
-    <h2>Последние ставки</h2>
+    <h2>{{ __('admin.recentBids') }}</h2>
 
     @if ($recentBids->isEmpty())
-        <p class="empty">Ставок пока нет.</p>
+        <p class="empty">{{ __('admin.noBids') }}</p>
     @else
         <table class="table">
             <thead>
                 <tr>
-                    <th>Участник</th>
-                    <th>Лот</th>
-                    <th>Сумма</th>
-                    <th>Время</th>
+                    <th>{{ __('admin.col.user') }}</th>
+                    <th>{{ __('admin.col.lot') }}</th>
+                    <th>{{ __('auction.amount') }}</th>
+                    <th>{{ __('admin.col.time') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,7 +54,7 @@
                                 —
                             @endif
                         </td>
-                        <td><strong>{{ number_format((float) $bid->amount, 0, ',', ' ') }}</strong></td>
+                        <td><strong>{{ format_price((float) $bid->amount) }}</strong></td>
                         <td>{{ $bid->created_at->format('d.m.Y H:i') }}</td>
                     </tr>
                 @endforeach

@@ -1,15 +1,15 @@
 @extends('layouts.moderator')
 
-@section('title', $auction->exists ? 'Редактирование лота' : 'Новый лот')
+@section('title', $auction->exists ? __('admin.form.editTitle') : __('admin.form.createTitle'))
 
 @section('content')
-<p><a href="{{ route('moderator.auctions.index') }}">← К моим лотам</a></p>
+<p><a href="{{ route('moderator.auctions.index') }}">{{ __('admin.form.back') }}</a></p>
 
-<h1>{{ $auction->exists ? 'Редактирование лота' : 'Новый лот' }}</h1>
+<h1>{{ $auction->exists ? __('admin.form.editTitle') : __('admin.form.createTitle') }}</h1>
 
 @if ($errors->any())
     <div class="alert alert--error">
-        Проверьте заполнение полей:
+        {{ __('admin.form.check') }}
         <ul>
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -24,21 +24,21 @@
     @csrf
 
     <div class="form__group">
-        <label for="title">Название</label>
+        <label for="title">{{ __('admin.form.titleField') }}</label>
         <input type="text" id="title" name="title" value="{{ old('title', $auction->title) }}" required>
         @error('title') <span class="form__error">{{ $message }}</span> @enderror
     </div>
 
     <div class="form__group">
-        <label for="description">Описание</label>
+        <label for="description">{{ __('admin.form.description') }}</label>
         <textarea id="description" name="description" rows="5" required>{{ old('description', $auction->description) }}</textarea>
         @error('description') <span class="form__error">{{ $message }}</span> @enderror
     </div>
 
     <div class="form__group">
-        <label for="category_id">Категория</label>
+        <label for="category_id">{{ __('admin.form.category') }}</label>
         <select id="category_id" name="category_id">
-            <option value="">— без категории —</option>
+            <option value="">{{ __('admin.form.noCategory') }}</option>
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}"
                     {{ old('category_id', $auction->category_id) == $category->id ? 'selected' : '' }}>
@@ -50,14 +50,14 @@
 
     <div class="form__row">
         <div class="form__group">
-            <label for="starting_price">Стартовая цена (сомони)</label>
+            <label for="starting_price">{{ __('admin.form.startPrice') }}</label>
             <input type="number" id="starting_price" name="starting_price" min="1" step="1"
                    value="{{ old('starting_price', $auction->starting_price) }}" required>
             @error('starting_price') <span class="form__error">{{ $message }}</span> @enderror
         </div>
 
         <div class="form__group">
-            <label for="minimum_bid_step">Минимальный шаг (сомони)</label>
+            <label for="minimum_bid_step">{{ __('admin.form.step') }}</label>
             <input type="number" id="minimum_bid_step" name="minimum_bid_step" min="1" step="1"
                    value="{{ old('minimum_bid_step', $auction->minimum_bid_step ?? 100) }}" required>
             @error('minimum_bid_step') <span class="form__error">{{ $message }}</span> @enderror
@@ -66,14 +66,14 @@
 
     <div class="form__row">
         <div class="form__group">
-            <label for="start_at">Открытие</label>
+            <label for="start_at">{{ __('admin.form.openAt') }}</label>
             <input type="datetime-local" id="start_at" name="start_at"
                    value="{{ old('start_at', $auction->start_at?->format('Y-m-d\TH:i')) }}" required>
             @error('start_at') <span class="form__error">{{ $message }}</span> @enderror
         </div>
 
         <div class="form__group">
-            <label for="end_at">Закрытие</label>
+            <label for="end_at">{{ __('admin.form.closeAt') }}</label>
             <input type="datetime-local" id="end_at" name="end_at"
                    value="{{ old('end_at', $auction->end_at?->format('Y-m-d\TH:i')) }}" required>
             @error('end_at') <span class="form__error">{{ $message }}</span> @enderror
@@ -84,15 +84,15 @@
         <label>
             <input type="checkbox" name="publish" value="1"
                 {{ old('publish', in_array($auction->status, ['pending_moderation', 'scheduled', 'active'])) ? 'checked' : '' }}>
-            Отправить на модерацию (администратор одобрит лот, и он откроется по расписанию)
+            {{ __('mod.form.publish') }}
         </label>
     </div>
 
     <div class="form__actions">
         <button type="submit" class="btn btn--primary">
-            {{ $auction->exists ? 'Сохранить' : 'Создать лот' }}
+            {{ $auction->exists ? __('admin.form.save') : __('admin.form.createBtn') }}
         </button>
-        <a href="{{ route('moderator.auctions.index') }}" class="btn btn--ghost">Отмена</a>
+        <a href="{{ route('moderator.auctions.index') }}" class="btn btn--ghost">{{ __('admin.form.cancel') }}</a>
     </div>
 </form>
 @endsection

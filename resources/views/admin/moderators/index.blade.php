@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
-@section('title', 'Модераторы')
+@section('title', __('admin.moderators.title'))
 
 @section('content')
-<h1>Модераторы</h1>
+<h1>{{ __('admin.moderators.title') }}</h1>
 
 @forelse ($moderators as $moderator)
     <div class="card moderator-card">
@@ -13,21 +13,21 @@
                 <p class="moderator-card__email">{{ $moderator->email }}</p>
             </div>
             <span class="badge badge--draft">
-                лотов: {{ $moderator->managed_auctions_count }}
+                {{ __('admin.moderators.lotsCount', ['count' => $moderator->managed_auctions_count]) }}
             </span>
         </div>
 
         @if ($moderator->managedAuctions->isEmpty())
-            <p class="empty">Назначенных лотов нет.</p>
+            <p class="empty">{{ __('admin.moderators.noLots') }}</p>
         @else
             <ul class="moderator-card__lots">
                 @foreach ($moderator->managedAuctions as $lot)
                     @php $status = $lot->displayStatus(); @endphp
                     <li>
-                        <span class="badge badge--{{ $status }}">{{ $statuses[$status] ?? $status }}</span>
+                        <span class="badge badge--{{ $status }}">{{ __('status.'.$status) }}</span>
                         <a href="{{ route('auctions.show', $lot) }}">#{{ $lot->id }} {{ $lot->title }}</a>
                         <span class="moderator-card__price">
-                            {{ number_format($lot->currentPrice(), 0, ',', ' ') }} сомони
+                            {{ format_price($lot->currentPrice()) }}
                         </span>
                     </li>
                 @endforeach
@@ -35,6 +35,6 @@
         @endif
     </div>
 @empty
-    <p class="empty">Модераторов пока нет. Назначьте роль moderator на странице пользователей.</p>
+    <p class="empty">{{ __('admin.moderators.empty') }}</p>
 @endforelse
 @endsection

@@ -39,7 +39,7 @@ class UserController extends Controller
     public function toggleBlock(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Нельзя заблокировать самого себя.');
+            return back()->with('error', __('admin.flash.selfBlock'));
         }
 
         $user->update(['is_active' => ! $user->is_active]);
@@ -47,8 +47,8 @@ class UserController extends Controller
         return back()->with(
             'success',
             $user->is_active
-                ? "Пользователь «{$user->name}» разблокирован."
-                : "Пользователь «{$user->name}» заблокирован."
+                ? __('admin.flash.userUnblocked', ['name' => $user->name])
+                : __('admin.flash.userBlocked', ['name' => $user->name])
         );
     }
 
@@ -62,7 +62,7 @@ class UserController extends Controller
         ]);
 
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Нельзя изменить роль самого себя.');
+            return back()->with('error', __('admin.flash.selfRole'));
         }
 
         $user->update(['role' => $data['role']]);
@@ -72,7 +72,7 @@ class UserController extends Controller
             Auction::where('moderator_id', $user->id)->update(['moderator_id' => null]);
         }
 
-        return back()->with('success', "Роль пользователя «{$user->name}» изменена: {$data['role']}.");
+        return back()->with('success', __('admin.flash.roleChanged', ['name' => $user->name, 'role' => $data['role']]));
     }
 
     /**
@@ -81,20 +81,20 @@ class UserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Нельзя удалить самого себя.');
+            return back()->with('error', __('admin.flash.selfDelete'));
         }
 
         if ($user->isAdmin()) {
-            return back()->with('error', 'Администраторов удалять нельзя.');
+            return back()->with('error', __('admin.flash.adminDelete'));
         }
 
         if ($user->bids()->exists() || $user->createdAuctions()->exists()) {
-            return back()->with('error', 'У пользователя есть история (ставки или лоты). Используйте блокировку вместо удаления.');
+            return back()->with('error', __('admin.flash.hasHistory'));
         }
 
         $name = $user->name;
         $user->delete();
 
-        return back()->with('success', "Пользователь «{$name}» удалён.");
+        return back()->with('success', __('admin.flash.userDeleted', ['name' => $name]));
     }
 }
