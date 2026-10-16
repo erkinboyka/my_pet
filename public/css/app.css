@@ -674,6 +674,31 @@ h2 {
     color: var(--color-muted);
 }
 
+/* ---------- Страницы ошибок ---------- */
+
+.error-page {
+    text-align: center;
+    padding: 70px 0;
+}
+
+.error-page h1 {
+    font-size: 72px;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.error-page__text {
+    color: var(--color-muted);
+    margin-bottom: 24px;
+    font-size: 17px;
+}
+
+.error-page__actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
 /* ---------- Форма ставки ---------- */
 
 .bid-form {
