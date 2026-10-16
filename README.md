@@ -1,58 +1,106 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Онлайн-аукцион
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Учебный проект — полноценный интернет-аукцион на Laravel: открытый лендинг с лотами,
+регистрация и авторизация, три роли (администратор, модератор, клиент) и живая система ставок.
 
-## About Laravel
+## Технологии
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.3, Laravel 13
+- MySQL 8
+- Blade-шаблоны, обычный CSS и немного JavaScript (без React/Vue/TypeScript)
+- Очереди, Redis и вебсокетов нет — всё максимально просто и читаемо
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Роли
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Роль | Возможности |
+|------|-------------|
+| **Гость** | Смотрит лендинг, список лотов, карточки лотов, ищет и фильтрует |
+| **Клиент** | Ставит деньги, видит историю своих ставок и выигранные лоты |
+| **Модератор** | Создаёт лоты, правит их, отправляет на модерацию, ставит на публикацию/в отклонение. Видит **только свои** лоты |
+| **Администратор** | Управляет всеми пользователями (блокировка), всеми лотами, назначает модераторов, одобряет лоты, смотрит статистику |
 
-## Learning Laravel
+Роль при регистрации всегда `client` — назначить себе роль администратора через форму нельзя
+(на это есть отдельный тест).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Что умеет
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Ставки с защитой от гонок**: чтение → проверка → вставка и обновление цены происходят
+  внутри одной транзакции с `lockForUpdate`, параллельные ставки не «перетирают» друг друга.
+- **Правила ставок**: первая ставка ≥ стартовой цены, дальше только `текущая + шаг`
+  (кратно шагу), поднять собственную лидирующую ставку нельзя.
+- **Серверное время**: JS-обратный отсчёт в карточке — только для красоты,
+  решает сервер. Истёкшие лоты закрывает команда `auctions:finish` по расписанию.
+- **Модерация**: клиентские/модераторские лоты проходят цепочку
+  `черновик → на модерации → запланирован → активен → завершён`
+  (+ `отклонён` и `отменён`).
+- **Поиск и фильтры**: по названию, категории, статусу (вкладки), сортировка, пагинация.
+- **Блокировка пользователей**: заблокированный не может войти и ставить;
+  удалять пользователей с историей ставок нельзя — только блокировать.
+- **Переключатели языка и валюты**: ru / en и TJS / USD (курс в `config/currency.php`).
+- **Мелочи**: flash-сообщения, состояния загрузки кнопки ставки, пустые состояния,
+  кастомные страницы 404 / 403 / 419, лимит ставок (30 в минуту), индексы под фильтры.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Запуск
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Требования: PHP 8.3+, Composer, MySQL 8.
 
 ```bash
-composer require laravel/boost --dev
+composer install
+cp .env.example .env
+php artisan key:generate
 
-php artisan boost:install
+# создайте базу данных (например, auction) и пропишите её в .env
+
+php artisan migrate --seed
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Для закрытия истёкших лотов нужен планировщик — раз в минуту:
 
-## Contributing
+```bash
+php artisan schedule:run   # в cron / планировщике Windows
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+вручную проверить можно так: `php artisan auctions:finish`.
 
-## Code of Conduct
+## Тесты
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan test
+```
 
-## Security Vulnerabilities
+Feature-тесты на sqlite in-memory: правила ставок, роли и доступы,
+политика модератора, регистрация. Сейчас 16 тестов.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Учётные записи после `php artisan migrate --seed`
 
-## License
+Пароль у всех — `password`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Роль | Email |
+|------|-------|
+| Администратор | `admin@auction.tj` |
+| Модераторы | `moderator1@auction.tj`, `moderator2@auction.tj` |
+| Клиенты | `client1@auction.tj` … `client5@auction.tj` |
+| Заблокированный | `blocked@auction.tj` |
+
+Сидер перезапускаемый: пользователи и категории обновляются на месте,
+демо-лоты пересоздаются с датами относительно текущего момента.
+
+## Структура
+
+```
+app/Services/AuctionService.php   — логика ставок и завершения лотов
+app/Policies/AuctionPolicy.php    — модератор видит только свои лоты
+app/Http/Middleware/              — role: и переключатель языка
+routes/web.php                    — все маршруты, включая /admin, /moderator, /account
+resources/views/                  — Blade-шаблоны (layouts, admin, moderator, errors)
+database/seeders/DatabaseSeeder.php — демо-данные
+lang/ru.json, lang/en.json        — переводы интерфейса
+```
+
+Время в БД хранится в UTC, сайт отображает `Asia/Dushanbe`.
+Деньги хранятся в сомони (TJS), в долларах показываются по курсу из конфига.
+
+---
+
+Проект собирался поэтапно за неделю — даты коммитов (10–16 октября 2026) это отражают.
