@@ -9,31 +9,35 @@ use Illuminate\View\View;
 
 class AuctionController extends Controller
 {
-    public function __construct(private AuctionService $auctionService)
+    private AuctionService $auctionService;
+
+    public function __construct(AuctionService $auctionService)
     {
+        $this->auctionService = $auctionService;
     }
 
-    /**
-     * Список лотов.
-     */
+    // список лотов
     public function index(Request $request): View
     {
         $query = Auction::query()->whereNotIn('status', ['draft', 'pending_moderation', 'cancelled', 'rejected']);
 
-        // Поиск по названию и описанию
-        if ($search = trim((string) $request->query('q'))) {
+        // поиск по названию и описанию
+        // TODO: нормальный поиск через индекс, like по описанию тормозит
+        $search = trim((string) $request->query('q'));
+        if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
-        // Фильтр по категории
-        if ($categoryId = $request->integer('category')) {
+        // фильтр по категории
+        $categoryId = $request->integer('category');
+        if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
 
-        // Вкладки: всё / активные / скоро / завершённые
+        // вкладки: всё / активные / скоро / завершённые
         $tab = $request->query('tab', 'live');
         if ($tab === 'live') {
             $query->live();
@@ -43,15 +47,19 @@ class AuctionController extends Controller
             $query->finished();
         }
 
-        // Сортировка
+        // сортировка
         $sort = $request->query('sort', 'end_asc');
-        match ($sort) {
-            'end_desc' => $query->orderByDesc('end_at'),
-            'price_asc' => $query->orderBy('starting_price'),
-            'price_desc' => $query->orderByDesc('starting_price'),
-            'new' => $query->latest(),
-            default => $query->orderBy('end_at'),
-        };
+        if ($sort === 'end_desc') {
+            $query->orderByDesc('end_at');
+        } elseif ($sort === 'price_asc') {
+            $query->orderBy('starting_price');
+        } elseif ($sort === 'price_desc') {
+            $query->orderByDesc('starting_price');
+        } elseif ($sort === 'new') {
+            $query->latest();
+        } else {
+            $query->orderBy('end_at');
+        }
 
         return view('auctions.index', [
             'lots' => $query->paginate(9)->withQueryString(),
@@ -61,12 +69,10 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Страница одного лота.
-     */
+    // страница одного лота
     public function show(Auction $auction): View
     {
-        // Если время лота вышло — сразу фиксируем победителя
+        // если время вышло — сразу записываем победителя
         $this->auctionService->finalizeIfExpired($auction);
 
         $auction->load([

@@ -23,9 +23,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
 
-/*
- * Переключатели языка и валюты (настройки хранятся в сессии)
- */
+// переключатели языка и валюты, настройки лежат в сессии
 Route::get('/lang/{lang}', function (string $lang) {
     if (in_array($lang, ['ru', 'en'], true)) {
         session(['lang' => $lang]);
@@ -42,9 +40,7 @@ Route::get('/currency/{code}', function (string $code) {
     return back();
 })->name('currency.set');
 
-/*
- * Ставки и личный кабинет участника
- */
+// ставки и личный кабинет участника
 Route::post('/auctions/{auction}/bids', [BidController::class, 'store'])
     ->middleware(['auth', 'throttle:30,1'])
     ->name('bids.store');
@@ -54,9 +50,7 @@ Route::middleware('auth')->prefix('account')->name('client.')->group(function ()
     Route::get('/wins', [BidController::class, 'wins'])->name('wins');
 });
 
-/*
- * Панель администратора
- */
+// админка
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
@@ -77,9 +71,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/moderators', [Admin\ModeratorController::class, 'index'])->name('moderators.index');
 });
 
-/*
- * Кабинет модератора
- */
+// кабинет модератора
 Route::middleware(['auth', 'role:moderator'])->prefix('moderator')->name('moderator.')->group(function () {
     Route::get('/', [Moderator\DashboardController::class, 'index'])->name('dashboard');
 

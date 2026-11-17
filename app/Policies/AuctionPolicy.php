@@ -7,16 +7,18 @@ use App\Models\User;
 
 class AuctionPolicy
 {
-    /**
-     * Модератор работает только со своими лотами, админ — со всеми.
-     */
+    // модератор работает только со своими лотами, админ со всеми
     public function view(User $user, Auction $auction): bool
     {
+        $result = false;
+
         if ($user->isAdmin()) {
-            return true;
+            $result = true;
+        } elseif ($user->isModerator() && $auction->moderator_id === $user->id) {
+            $result = true;
         }
 
-        return $user->isModerator() && $auction->moderator_id === $user->id;
+        return $result;
     }
 
     public function create(User $user): bool
@@ -24,41 +26,35 @@ class AuctionPolicy
         return $user->isAdmin() || $user->isModerator();
     }
 
-    /**
-     * Редактирование: модератор — только свои лоты и не завершённые.
-     */
+    // редактирование: модератор — только свои и не завершённые
     public function update(User $user, Auction $auction): bool
     {
+        $result = false;
+
         if ($user->isAdmin()) {
-            return $auction->status !== 'finished';
+            $result = $auction->status !== 'finished';
+        } elseif ($user->isModerator() && $auction->moderator_id === $user->id) {
+            $result = ! in_array($auction->status, ['active', 'finished', 'cancelled']);
         }
 
-        if (! $user->isModerator() || $auction->moderator_id !== $user->id) {
-            return false;
-        }
-
-        return ! in_array($auction->status, ['active', 'finished', 'cancelled']);
+        return $result;
     }
 
-    /**
-     * Отмена лота.
-     */
+    // отмена лота
     public function cancel(User $user, Auction $auction): bool
     {
+        $result = false;
+
         if ($user->isAdmin()) {
-            return $auction->status !== 'finished';
+            $result = $auction->status !== 'finished';
+        } elseif ($user->isModerator() && $auction->moderator_id === $user->id) {
+            $result = in_array($auction->status, ['draft', 'pending_moderation', 'scheduled']);
         }
 
-        if (! $user->isModerator() || $auction->moderator_id !== $user->id) {
-            return false;
-        }
-
-        return in_array($auction->status, ['draft', 'pending_moderation', 'scheduled']);
+        return $result;
     }
 
-    /**
-     * Одобрение и отклонение лотов — только админ.
-     */
+    // одобрение и отклонение — только админ
     public function moderate(User $user, Auction $auction): bool
     {
         return $user->isAdmin() && $auction->status === 'pending_moderation';

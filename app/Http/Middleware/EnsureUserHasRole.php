@@ -8,10 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserHasRole
 {
-    /**
-     * Пропускает только пользователей с одной из указанных ролей.
-     * Использование: ->middleware('role:admin') или ->middleware('role:admin,moderator')
-     */
+    // пропускает только юзеров с одной из указанных ролей.
+    // используется как ->middleware('role:admin,moderator')
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();
@@ -20,7 +18,7 @@ class EnsureUserHasRole
             abort(403);
         }
 
-        // Заблокированный пользователь не может пользоваться сайтом
+        // заблокированный не может пользоваться сайтом
         if (! $user->is_active) {
             auth()->logout();
             $request->session()->invalidate();

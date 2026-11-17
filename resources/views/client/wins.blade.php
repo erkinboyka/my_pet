@@ -23,7 +23,7 @@
         @forelse ($wins as $win)
             <tr>
                 <td><a href="{{ route('auctions.show', $win) }}">{{ $win->title }}</a></td>
-                <td>{{ $win->category?->name ?? '—' }}</td>
+                <td>{{ $win->category ? $win->category->name : '—' }}</td>
                 <td><strong>{{ format_price((float) ($win->winning_price ?? $win->currentPrice())) }}</strong></td>
                 <td>{{ $win->end_at->format('d.m.Y H:i') }}</td>
             </tr>

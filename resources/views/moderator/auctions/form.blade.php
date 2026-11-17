@@ -68,14 +68,14 @@
         <div class="form__group">
             <label for="start_at">{{ __('admin.form.openAt') }}</label>
             <input type="datetime-local" id="start_at" name="start_at"
-                   value="{{ old('start_at', $auction->start_at?->format('Y-m-d\TH:i')) }}" required>
+                   value="{{ old('start_at', $auction->start_at ? $auction->start_at->format('Y-m-d\TH:i') : '') }}" required>
             @error('start_at') <span class="form__error">{{ $message }}</span> @enderror
         </div>
 
         <div class="form__group">
             <label for="end_at">{{ __('admin.form.closeAt') }}</label>
             <input type="datetime-local" id="end_at" name="end_at"
-                   value="{{ old('end_at', $auction->end_at?->format('Y-m-d\TH:i')) }}" required>
+                   value="{{ old('end_at', $auction->end_at ? $auction->end_at->format('Y-m-d\TH:i') : '') }}" required>
             @error('end_at') <span class="form__error">{{ $message }}</span> @enderror
         </div>
     </div>

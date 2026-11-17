@@ -9,20 +9,14 @@ use Illuminate\Validation\ValidationException;
 
 class AuctionService
 {
-    /**
-     * Принять ставку.
-     *
-     * Вся проверка идёт внутри транзакции с блокировкой строки лота
-     * (lockForUpdate), поэтому две одновременные ставки не могут
-     * обработать одну и ту же текущую цену.
-     */
+    // тут всё внутри транзакции, лот лочим через lockForUpdate,
+    // иначе две ставки одновременно перетрут друг другу цену
     public function placeBid(Auction $auction, int $userId, float $amount): Bid
     {
         return DB::transaction(function () use ($auction, $userId, $amount) {
-            /** @var Auction $locked */
             $locked = Auction::whereKey($auction->id)->lockForUpdate()->firstOrFail();
 
-            // Сразу закрываем лот, если время вышло
+            // если время уже вышло — сразу закрываем лот
             $this->finalizeIfExpired($locked);
 
             if (! $locked->isOpenForBids()) {
@@ -37,7 +31,7 @@ class AuctionService
                 ]);
             }
 
-            // Последняя ставка принадлежит этому же пользователю — перебивать себя нельзя
+            // если лидер ставок это тот же юзер — перебивать себя нельзя
             $topBid = $locked->bids()->latest('id')->first();
             if ($topBid && $topBid->user_id === $userId) {
                 throw ValidationException::withMessages([
@@ -64,26 +58,28 @@ class AuctionService
         });
     }
 
-    /**
-     * Если время лота вышло — статус finished и победитель (последняя ставка).
-     * Вызывается лениво при просмотре лота и по расписанию.
-     */
+    // если время лота вышло — ставим finished и победителя (последняя ставка).
+    // вызывается и при просмотре лота, и по расписанию
     public function finalizeIfExpired(Auction $auction): void
     {
-        if (! in_array($auction->status, ['scheduled', 'active'])) {
-            return;
+        if (in_array($auction->status, ['scheduled', 'active'])) {
+            if (now()->gte($auction->end_at)) {
+                $winnerBid = $auction->bids()->latest('id')->first();
+
+                $winnerId = null;
+                $winningPrice = null;
+
+                if ($winnerBid) {
+                    $winnerId = $winnerBid->user_id;
+                    $winningPrice = $winnerBid->amount;
+                }
+
+                $auction->update([
+                    'status' => 'finished',
+                    'winner_id' => $winnerId,
+                    'winning_price' => $winningPrice,
+                ]);
+            }
         }
-
-        if (now()->lt($auction->end_at)) {
-            return;
-        }
-
-        $winnerBid = $auction->bids()->latest('id')->first();
-
-        $auction->update([
-            'status' => 'finished',
-            'winner_id' => $winnerBid?->user_id,
-            'winning_price' => $winnerBid?->amount,
-        ]);
     }
 }

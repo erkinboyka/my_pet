@@ -1,25 +1,23 @@
 <?php
 
-/**
- * Небольшие помощники для отображения цен и настроек пользователя.
- */
+// хелперы для цен и настроек юзера
 
 if (! function_exists('current_currency')) {
-    /**
-     * Выбранная валюта: TJS (сомони) или USD.
-     */
+    // валюта: TJS (сомони) или USD
     function current_currency(): string
     {
         $code = session('currency', 'TJS');
 
-        return in_array($code, ['TJS', 'USD'], true) ? $code : 'TJS';
+        if (! in_array($code, ['TJS', 'USD'], true)) {
+            $code = 'TJS';
+        }
+
+        return $code;
     }
 }
 
 if (! function_exists('format_price')) {
-    /**
-     * Суммы в базе хранятся в сомони. В USD показываем по курсу из конфига.
-     */
+    // суммы в базе в сомони, в долларах показываем по курсу из конфига
     function format_price(float $amount): string
     {
         if (current_currency() === 'USD') {

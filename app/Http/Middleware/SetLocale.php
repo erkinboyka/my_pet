@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
-    /**
-     * Язык берём из сессии (переключатель в шапке).
-     */
+    // язык из сессии, переключатель в шапке
     public function handle(Request $request, Closure $next): Response
     {
         $lang = session('lang', config('app.locale', 'ru'));

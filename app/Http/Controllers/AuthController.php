@@ -11,17 +11,12 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    /**
-     * Показать форму входа.
-     */
+    // форма входа
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Обработать вход пользователя.
-     */
     public function store(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -29,7 +24,7 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Заблокированные пользователи войти не могут
+        // заблокированные залогиниться не могут
         if (! Auth::attempt($credentials + ['is_active' => true], $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => __('auth.invalid'),
@@ -40,25 +35,25 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        // Каждая роль попадает "свою" часть сайта
-        return match ($user->role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'moderator' => redirect()->route('moderator.dashboard'),
-            default => redirect()->route('auctions.index'),
-        };
+        // каждая роль ходит в свою часть сайта
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->role === 'moderator') {
+            return redirect()->route('moderator.dashboard');
+        }
+
+        return redirect()->route('auctions.index');
     }
 
-    /**
-     * Показать форму регистрации.
-     */
+    // форма регистрации
     public function register(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Обработать регистрацию. Новый пользователь всегда client.
-     */
+    // новый юзер всегда получает роль client
     public function storeRegister(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -85,9 +80,7 @@ class AuthController extends Controller
             ->with('success', __('auth.registered'));
     }
 
-    /**
-     * Выйти из аккаунта.
-     */
+    // выход
     public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();

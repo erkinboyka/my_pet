@@ -13,14 +13,8 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -45,39 +39,33 @@ class User extends Authenticatable
         return $this->role === 'client';
     }
 
-    /**
-     * Имя для публичных страниц: "Иван К." вместо полного имени.
-     */
+    // имя для публичных страниц, типа "Иван К."
     public function shortName(): string
     {
         $parts = preg_split('/\s+/', trim($this->name));
 
-        if (count($parts) < 2) {
-            return $this->name;
+        $result = $this->name;
+
+        if (count($parts) >= 2) {
+            $result = $parts[0] . ' ' . mb_strtoupper(mb_substr($parts[1], 0, 1)) . '.';
         }
 
-        return $parts[0] . ' ' . mb_strtoupper(mb_substr($parts[1], 0, 1)) . '.';
+        return $result;
     }
 
-    /**
-     * Лоты, которыми пользователь управляет как модератор.
-     */
+    // лоты которыми юзер рулит как модератор
     public function managedAuctions()
     {
         return $this->hasMany(Auction::class, 'moderator_id');
     }
 
-    /**
-     * Лоты, которые пользователь создал.
-     */
+    // лоты которые он сам создал
     public function createdAuctions()
     {
         return $this->hasMany(Auction::class, 'created_by');
     }
 
-    /**
-     * Ставки пользователя.
-     */
+    // ставки
     public function bids()
     {
         return $this->hasMany(Bid::class);

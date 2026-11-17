@@ -7,9 +7,7 @@ use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    /**
-     * Главная страница — лендинг.
-     */
+    // главная, лендинг
     public function index(): View
     {
         return view('home', [

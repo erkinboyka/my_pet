@@ -11,24 +11,24 @@ use Illuminate\View\View;
 
 class BidController extends Controller
 {
-    public function __construct(private AuctionService $auctions)
+    private AuctionService $auctions;
+
+    public function __construct(AuctionService $auctions)
     {
+        $this->auctions = $auctions;
     }
 
-    /**
-     * Принять ставку. Клиент присылает только amount — остальное
-     * сервер сам читает из лота.
-     */
+    // принять ставку, юзер шлёт только amount, остальное само из лота
     public function store(PlaceBidRequest $request, Auction $auction): RedirectResponse
     {
         $user = $request->user();
 
-        // Ставки делают только клиенты
+        // ставить могут только клиенты
         if (! $user->isClient()) {
             return back()->with('error', __('bid.err.role'));
         }
 
-        // На свой лот ставить нельзя
+        // на свой лот ставить нельзя
         if ($auction->moderator_id === $user->id || $auction->created_by === $user->id) {
             return back()->with('error', __('bid.err.onOwn'));
         }
@@ -43,9 +43,7 @@ class BidController extends Controller
         );
     }
 
-    /**
-     * История своих ставок.
-     */
+    // история ставок юзера
     public function myBids(): View
     {
         $bids = Bid::where('user_id', auth()->id())
@@ -59,9 +57,7 @@ class BidController extends Controller
         ]);
     }
 
-    /**
-     * Выигранные лоты.
-     */
+    // выигранные лоты
     public function wins(): View
     {
         $wins = Auction::where('winner_id', auth()->id())

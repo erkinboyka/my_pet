@@ -11,20 +11,20 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    /**
-     * Список всех пользователей.
-     */
+    // все пользователи сайта
     public function index(Request $request): View
     {
         $query = User::query();
 
-        if ($search = trim((string) $request->query('q'))) {
+        $search = trim((string) $request->query('q'));
+        if ($search) {
             $query->where(fn ($q) => $q
                 ->where('name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%"));
         }
 
-        if ($role = $request->query('role')) {
+        $role = $request->query('role');
+        if ($role) {
             $query->where('role', $role);
         }
 
@@ -33,9 +33,7 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Заблокировать / разблокировать пользователя.
-     */
+    // заблокировать / разблокировать
     public function toggleBlock(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
@@ -52,9 +50,7 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Изменить роль пользователя.
-     */
+    // поменять роль
     public function changeRole(Request $request, User $user): RedirectResponse
     {
         $data = $request->validate([
@@ -67,7 +63,7 @@ class UserController extends Controller
 
         $user->update(['role' => $data['role']]);
 
-        // Снимаем назначенные лоты, если человек больше не модератор
+        // снимаем назначенные лоты, если человек больше не модератор
         if ($data['role'] !== 'moderator') {
             Auction::where('moderator_id', $user->id)->update(['moderator_id' => null]);
         }
@@ -75,9 +71,7 @@ class UserController extends Controller
         return back()->with('success', __('admin.flash.roleChanged', ['name' => $user->name, 'role' => $data['role']]));
     }
 
-    /**
-     * Удалить пользователя (только если у него нет ставок и лотов).
-     */
+    // удалить юзера, но только если у него нет ставок и лотов
     public function destroy(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {

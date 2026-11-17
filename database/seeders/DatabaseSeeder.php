@@ -11,14 +11,11 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Демо-данные для разработки и показа работы аукциона.
-     * Даты лотов считаются от текущего момента, поэтому после
-     * запуска сидера на сайте всегда есть активные и завершённые лоты.
-     */
+    // демо-данные, даты лотов считаются от текущего момента,
+    // поэтому после запуска на сайте всегда есть живые и конченые лоты
     public function run(): void
     {
-        // ---------- Категории ----------
+        // категории
 
         $categories = [];
         foreach ([
@@ -32,7 +29,7 @@ class DatabaseSeeder extends Seeder
             $categories[$slug] = Category::firstOrCreate(['slug' => $slug], ['name' => $name]);
         }
 
-        // ---------- Пользователи ----------
+        // пользователи
 
         $admin = $this->makeUser('admin@auction.tj', 'Азиз Каримов', 'admin');
         $moderator1 = $this->makeUser('moderator1@auction.tj', 'Фаррух Сафаров', 'moderator');
@@ -46,12 +43,12 @@ class DatabaseSeeder extends Seeder
             $this->makeUser('client5@auction.tj', 'Бахтиёра Саидов', 'client'),
         ];
 
-        // Заблокированный участник — для проверки админки
+        // заблокированный, для проверки админки
         $this->makeUser('blocked@auction.tj', 'Дилшод Назаров', 'client', false);
 
-        // ---------- Демо-лоты ----------
+        // лоты
 
-        // Сидер можно перезапускать — старые лоты и ставки удаляем
+        // сидер можно перезапускать, старые лоты и ставки удаляем
         Bid::query()->delete();
         Auction::query()->delete();
 

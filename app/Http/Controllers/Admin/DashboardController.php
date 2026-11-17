@@ -10,9 +10,7 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    /**
-     * Главный экран администратора.
-     */
+    // главный экран админа
     public function index(): View
     {
         return view('admin.dashboard', [

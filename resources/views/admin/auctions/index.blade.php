@@ -45,7 +45,7 @@
                 <td>{{ format_price($lot->currentPrice()) }}</td>
                 <td>{{ $lot->start_at->format('d.m.Y H:i') }}</td>
                 <td>{{ $lot->end_at->format('d.m.Y H:i') }}</td>
-                <td>{{ $lot->moderator?->name ?? '—' }}</td>
+                <td>{{ $lot->moderator ? $lot->moderator->name : '—' }}</td>
                 <td class="table__actions">
                     @if ($lot->status === 'pending_moderation')
                         <form method="POST" action="{{ route('admin.auctions.approve', $lot) }}" class="inline-form">

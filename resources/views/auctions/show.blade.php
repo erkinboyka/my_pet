@@ -63,7 +63,7 @@
                     <tbody>
                         @foreach ($auction->bids as $bid)
                             <tr>
-                                <td>{{ $bid->user?->shortName() ?? __('auction.deletedUser') }}</td>
+                                <td>{{ $bid->user ? $bid->user->shortName() : __('auction.deletedUser') }}</td>
                                 <td><strong>{{ format_price((float) $bid->amount) }}</strong></td>
                                 <td>{{ $bid->created_at->format('d.m.Y H:i') }}</td>
                             </tr>
@@ -82,7 +82,7 @@
 
                 @if ($auction->winner_id)
                     <p class="price-box__label">{{ __('auction.winner') }}</p>
-                    <p class="price-box__winner">{{ $auction->winner?->shortName() }}</p>
+                    <p class="price-box__winner">{{ $auction->winner ? $auction->winner->shortName() : '' }}</p>
                 @else
                     <p class="price-box__empty">{{ __('auction.noWinner') }}</p>
                 @endif

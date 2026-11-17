@@ -12,14 +12,13 @@ use Illuminate\View\View;
 
 class AuctionController extends Controller
 {
-    /**
-     * Только свои лоты — проверка по moderator_id, а не по роли.
-     */
+    // только свои лоты, проверка по moderator_id а не по роли
     public function index(Request $request): View
     {
         $query = Auction::where('moderator_id', auth()->id());
 
-        if ($status = $request->query('status')) {
+        $status = $request->query('status');
+        if ($status) {
             $query->where('status', $status);
         }
 
@@ -29,9 +28,7 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Форма создания своего лота.
-     */
+    // создать лот
     public function create(): View
     {
         $this->authorize('create', Auction::class);
@@ -42,9 +39,7 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Сохранить лот. Опубликованный лот уходит админу на модерацию.
-     */
+    // сохранить. опубликованный лот уходит админу на модерацию
     public function store(Request $request): RedirectResponse
     {
         $this->authorize('create', Auction::class);
@@ -57,18 +52,16 @@ class AuctionController extends Controller
         $auction->status = $request->boolean('publish') ? 'pending_moderation' : 'draft';
         $auction->save();
 
-        return redirect()->route('moderator.auctions.index')
-            ->with(
-                'success',
-                $auction->status === 'pending_moderation'
-                    ? __('mod.flash.createdPending', ['title' => $auction->title])
-                    : __('mod.flash.createdDraft', ['title' => $auction->title])
-            );
+        if ($auction->status === 'pending_moderation') {
+            $message = __('mod.flash.createdPending', ['title' => $auction->title]);
+        } else {
+            $message = __('mod.flash.createdDraft', ['title' => $auction->title]);
+        }
+
+        return redirect()->route('moderator.auctions.index')->with('success', $message);
     }
 
-    /**
-     * Страница своего лота (с полной историей ставок).
-     */
+    // своя страница лота, тут полная история ставок
     public function show(Auction $auction): View
     {
         $this->authorize('view', $auction);
@@ -85,9 +78,7 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Форма редактирования.
-     */
+    // форма редактирования
     public function edit(Auction $auction): View
     {
         $this->authorize('update', $auction);
@@ -98,9 +89,6 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Обновить лот.
-     */
     public function update(Request $request, Auction $auction): RedirectResponse
     {
         $this->authorize('update', $auction);
@@ -114,9 +102,7 @@ class AuctionController extends Controller
             ->with('success', __('mod.flash.updated', ['title' => $auction->title]));
     }
 
-    /**
-     * Отменить свой лот.
-     */
+    // отменить свой лот
     public function cancel(Auction $auction): RedirectResponse
     {
         $this->authorize('cancel', $auction);
@@ -126,9 +112,6 @@ class AuctionController extends Controller
         return back()->with('success', __('mod.flash.cancelled', ['title' => $auction->title]));
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     private function validateData(Request $request): array
     {
         return $request->validate([
@@ -144,27 +127,33 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Модератор не может сам себя опубликовать — лот уходит админу.
-     */
+    // модератор не может сам себя опубликовать, лот всё равно уходит админу
     private function resolveStatus(Auction $auction, Request $request): string
     {
         $current = $auction->status;
+        $status = $current;
 
         if (in_array($current, ['finished', 'cancelled', 'rejected'])) {
-            return $current;
+            // уже конченный лот не трогаем
+            $status = $current;
+        } elseif (! $request->boolean('publish')) {
+            if ($current === 'active') {
+                $status = 'active';
+            } else {
+                $status = 'draft';
+            }
+        } elseif (in_array($current, ['scheduled', 'active'])) {
+            // уже одобренный лот просто пересчитываем по времени
+            if (Carbon::parse($auction->start_at)->isFuture()) {
+                $status = 'scheduled';
+            } else {
+                $status = 'active';
+            }
+        } else {
+            // черновик или повторная правка — снова на модерацию
+            $status = 'pending_moderation';
         }
 
-        if (! $request->boolean('publish')) {
-            return $current === 'active' ? 'active' : 'draft';
-        }
-
-        // Уже одобренный лот просто пересчитываем по времени
-        if (in_array($current, ['scheduled', 'active'])) {
-            return Carbon::parse($auction->start_at)->isFuture() ? 'scheduled' : 'active';
-        }
-
-        // Чёрновик или повторная правка — снова на модерацию
-        return 'pending_moderation';
+        return $status;
     }
 }

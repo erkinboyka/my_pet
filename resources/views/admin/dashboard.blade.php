@@ -46,7 +46,7 @@
             <tbody>
                 @foreach ($recentBids as $bid)
                     <tr>
-                        <td>{{ $bid->user?->name ?? '—' }}</td>
+                        <td>{{ $bid->user ? $bid->user->name : '—' }}</td>
                         <td>
                             @if ($bid->auction)
                                 <a href="{{ route('auctions.show', $bid->auction) }}">{{ $bid->auction->title }}</a>

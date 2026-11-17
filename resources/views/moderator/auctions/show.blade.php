@@ -78,8 +78,8 @@
                     <tbody>
                         @foreach ($auction->bids as $bid)
                             <tr>
-                                <td>{{ $bid->user?->name ?? '—' }}</td>
-                                <td>{{ $bid->user?->email ?? '—' }}</td>
+                                <td>{{ $bid->user ? $bid->user->name : '—' }}</td>
+                                <td>{{ $bid->user ? $bid->user->email : '—' }}</td>
                                 <td><strong>{{ format_price((float) $bid->amount) }}</strong></td>
                                 <td>{{ $bid->created_at->format('d.m.Y H:i') }}</td>
                             </tr>

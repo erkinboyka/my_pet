@@ -13,18 +13,18 @@ use Illuminate\View\View;
 
 class AuctionController extends Controller
 {
-    /**
-     * Все лоты сайта.
-     */
+    // все лоты сайта
     public function index(Request $request): View
     {
         $query = Auction::query()->with(['category', 'moderator']);
 
-        if ($search = trim((string) $request->query('q'))) {
+        $search = trim((string) $request->query('q'));
+        if ($search) {
             $query->where('title', 'like', "%{$search}%");
         }
 
-        if ($status = $request->query('status')) {
+        $status = $request->query('status');
+        if ($status) {
             $query->where('status', $status);
         }
 
@@ -34,9 +34,7 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Форма создания лота.
-     */
+    // форма создания лота
     public function create(): View
     {
         return view('admin.auctions.form', [
@@ -46,9 +44,6 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Сохранить новый лот.
-     */
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validateData($request);
@@ -62,9 +57,7 @@ class AuctionController extends Controller
             ->with('success', __('admin.flash.lotCreated', ['title' => $auction->title]));
     }
 
-    /**
-     * Форма редактирования лота.
-     */
+    // форма редактирования
     public function edit(Auction $auction): View
     {
         return view('admin.auctions.form', [
@@ -74,9 +67,6 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Обновить лот.
-     */
     public function update(Request $request, Auction $auction): RedirectResponse
     {
         if ($auction->status === 'finished') {
@@ -92,23 +82,21 @@ class AuctionController extends Controller
             ->with('success', __('admin.flash.lotUpdated', ['title' => $auction->title]));
     }
 
-    /**
-     * Одобрить лот модератора.
-     */
+    // одобрить лот модератора
     public function approve(Auction $auction): RedirectResponse
     {
         $this->authorize('moderate', $auction);
 
-        $auction->update([
-            'status' => $auction->start_at->isFuture() ? 'scheduled' : 'active',
-        ]);
+        if ($auction->start_at->isFuture()) {
+            $auction->update(['status' => 'scheduled']);
+        } else {
+            $auction->update(['status' => 'active']);
+        }
 
         return back()->with('success', __('admin.flash.approved', ['title' => $auction->title]));
     }
 
-    /**
-     * Отклонить лот модератора.
-     */
+    // отклонить лот
     public function reject(Auction $auction): RedirectResponse
     {
         $this->authorize('moderate', $auction);
@@ -118,9 +106,7 @@ class AuctionController extends Controller
         return back()->with('success', __('admin.flash.rejected', ['title' => $auction->title]));
     }
 
-    /**
-     * Отменить лот.
-     */
+    // отменить лот
     public function cancel(Auction $auction): RedirectResponse
     {
         if ($auction->status === 'finished') {
@@ -132,11 +118,7 @@ class AuctionController extends Controller
         return back()->with('success', __('admin.flash.lotCancelled', ['title' => $auction->title]));
     }
 
-    /**
-     * Общая валидация формы лота.
-     *
-     * @return array<string, mixed>
-     */
+    // общая валидация формы лота
     private function validateData(Request $request): array
     {
         return $request->validate([
@@ -153,19 +135,21 @@ class AuctionController extends Controller
         ]);
     }
 
-    /**
-     * Статус после публикации: запланирован или активен — решает время.
-     */
+    // статус после публикации, по времени: будет запланирован или уже активен
     private function resolveStatus(Request $request, string $startAt, ?string $current = null): string
     {
+        $status = 'draft';
+
         if ($current !== null && in_array($current, ['finished', 'cancelled', 'rejected'])) {
-            return $current;
+            $status = $current;
+        } elseif ($request->boolean('publish')) {
+            if (now()->greaterThan(\Illuminate\Support\Carbon::parse($startAt))) {
+                $status = 'active';
+            } else {
+                $status = 'scheduled';
+            }
         }
 
-        if (! $request->boolean('publish')) {
-            return 'draft';
-        }
-
-        return now()->greaterThan(\Illuminate\Support\Carbon::parse($startAt)) ? 'active' : 'scheduled';
+        return $status;
     }
 }

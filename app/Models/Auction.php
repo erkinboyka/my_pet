@@ -9,9 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Auction extends Model
 {
-    /**
-     * Человекочитаемые статусы.
-     */
+    // человекочитаемые статусы, для выпадашек и таблиц
     public const STATUSES = [
         'draft' => 'Черновик',
         'pending_moderation' => 'На модерации',
@@ -75,9 +73,7 @@ class Auction extends Model
         return $this->hasMany(Bid::class);
     }
 
-    /**
-     * Лоты, которые идут прямо сейчас (по серверному времени).
-     */
+    // лоты которые идут прямо сейчас
     public function scopeLive(Builder $query): Builder
     {
         return $query
@@ -86,9 +82,7 @@ class Auction extends Model
             ->where('end_at', '>', now());
     }
 
-    /**
-     * Лоты, которые ещё не открылись.
-     */
+    // ещё не открылись
     public function scopeUpcoming(Builder $query): Builder
     {
         return $query
@@ -96,9 +90,7 @@ class Auction extends Model
             ->where('start_at', '>', now());
     }
 
-    /**
-     * Завершённые лоты.
-     */
+    // уже кончились
     public function scopeFinished(Builder $query): Builder
     {
         return $query
@@ -107,23 +99,23 @@ class Auction extends Model
             ->where('end_at', '<=', now());
     }
 
-    /**
-     * Можно ли сейчас принимать ставки (проверка по серверному времени).
-     */
+    // можно ли сейчас ставить, время смотрим по серверу
     public function isOpenForBids(): bool
     {
-        if (in_array($this->status, ['draft', 'pending_moderation', 'cancelled', 'rejected', 'finished'])) {
-            return false;
+        $result = false;
+
+        if (! in_array($this->status, ['draft', 'pending_moderation', 'cancelled', 'rejected', 'finished'])) {
+            $now = now();
+
+            if ($now->gte($this->start_at) && $now->lt($this->end_at)) {
+                $result = true;
+            }
         }
 
-        $now = now();
-
-        return $now->gte($this->start_at) && $now->lt($this->end_at);
+        return $result;
     }
 
-    /**
-     * Минимальная допустимая следующая ставка.
-     */
+    // минимальная следующая ставка
     public function nextMinBid(): float
     {
         if ($this->current_price === null) {
@@ -133,33 +125,33 @@ class Auction extends Model
         return (float) $this->current_price + (float) $this->minimum_bid_step;
     }
 
-    /**
-     * Текущая цена для отображения (пока ставок нет — стартовая).
-     */
+    // цена для показа, пока ставок нет — стартовая
     public function currentPrice(): float
     {
-        return $this->current_price !== null ? (float) $this->current_price : (float) $this->starting_price;
+        if ($this->current_price !== null) {
+            return (float) $this->current_price;
+        }
+
+        return (float) $this->starting_price;
     }
 
-    /**
-     * Статус лота с учётом времени — именно его видит посетитель.
-     */
+    // статус с учётом времени, это то что видит юзер на странице
     public function displayStatus(): string
     {
-        if (! in_array($this->status, ['scheduled', 'active'])) {
-            return $this->status;
+        $status = $this->status;
+
+        if (in_array($this->status, ['scheduled', 'active'])) {
+            $now = now();
+
+            if ($now->lt($this->start_at)) {
+                $status = 'scheduled';
+            } elseif ($now->gte($this->end_at)) {
+                $status = 'finished';
+            } else {
+                $status = 'active';
+            }
         }
 
-        $now = now();
-
-        if ($now->lt($this->start_at)) {
-            return 'scheduled';
-        }
-
-        if ($now->gte($this->end_at)) {
-            return 'finished';
-        }
-
-        return 'active';
+        return $status;
     }
 }

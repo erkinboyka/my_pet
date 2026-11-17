@@ -14,13 +14,13 @@ class FinishExpiredAuctions extends Command
 
     public function handle(AuctionService $service): int
     {
-        // Лоты, у которых время открытия уже пришло
+        // лоты у которых время открытия уже пришло
         $opened = Auction::where('status', 'scheduled')
             ->where('start_at', '<=', now())
             ->where('end_at', '>', now())
             ->update(['status' => 'active']);
 
-        // Лоты, у которых вышло время — фиксируем победителя
+        // а у этих вышло время — записываем победителя
         $expired = Auction::whereIn('status', ['scheduled', 'active'])
             ->where('end_at', '<=', now())
             ->pluck('id');

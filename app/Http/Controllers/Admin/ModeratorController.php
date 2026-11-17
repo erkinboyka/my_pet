@@ -9,9 +9,7 @@ use Illuminate\View\View;
 
 class ModeratorController extends Controller
 {
-    /**
-     * Список модераторов и назначенные им лоты.
-     */
+    // список модераторов и назначенные им лоты
     public function index(): View
     {
         $moderators = User::where('role', 'moderator')

@@ -27,7 +27,10 @@
         @forelse ($bids as $bid)
             @php
                 $lot = $bid->auction;
-                $status = $lot?->displayStatus();
+                $status = null;
+                if ($lot) {
+                    $status = $lot->displayStatus();
+                }
                 $isLeader = $lot && (float) $lot->current_price === (float) $bid->amount && $status === 'active';
             @endphp
             <tr>

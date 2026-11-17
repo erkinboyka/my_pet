@@ -9,9 +9,7 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    /**
-     * Обзор модератора: только его лоты.
-     */
+    // обзор модератора, только его лоты
     public function index(): View
     {
         $user = auth()->user();
